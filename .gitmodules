@@ -1,0 +1,3 @@
+[submodule "modules/RustSPICE"]
+	path = modules/RustSPICE
+	url = https://github.com/Jthora/RustSPICE.git
