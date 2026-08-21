@@ -221,7 +221,122 @@ schedule.
 | 4 | β tomography + resolution | High | High | 3 |
 | 8 | Ocean loading precompute | Required | High | 3 |
 | 6 | Moonquake interior inversion | Medium | Medium | 4 |
+| 9 | β = τ̇/(aσ) synthesis | **Very high** | Medium | **1** |
+| 10 | PTA statistical machinery | High | Low | 2 |
 
 Ideas 1, 2 and 3 together would convert this project from a correlation search
 into a physically-grounded inverse problem with a built-in artifact test. That is
 the strategic goal of the next research pass.
+
+Idea 9 subsumes and sharpens them: if β ∝ τ̇/(aσ) holds, the project acquires an
+**external validation channel** (β vs. GPS strain rate) that does not route through
+earthquake forecasting at all — and a falsifiable spectral-slope prediction that
+distinguishes real response from artifact. Verify or kill it first.
+
+---
+
+## 9. Synthesis: β measures τ̇/(aσ), and that unifies the literature ★★
+
+*Added during the brainstorm pass. Speculative — the arithmetic below is
+back-of-envelope and agenda item 1 exists to verify or kill it.*
+
+**The chain.**
+
+Dieterich's characteristic time is
+
+```
+t_a = a σ / τ̇
+```
+
+with σ the **effective** normal stress and τ̇ the local stressing rate. If the
+seismicity response to periodic forcing is a low-pass filter with corner at
+ω ≈ 1/t_a, then tidal sensitivity is governed by t_a — and therefore
+
+```
+β  ∝  1 / t_a  =  τ̇ / (a σ)
+```
+
+**Tidal sensitivity is a measurement of local stressing rate divided by effective
+normal stress.**
+
+**Why this is interesting: it explains four separate observations at once.**
+
+| Observation | Explanation via t_a |
+|---|---|
+| Earthquakes correlate weakly with tides (Beeler & Lockner) | Typical crust: a≈0.01, σ≈150 MPa, τ̇≈0.003 MPa/yr → t_a ~ centuries. Tidal periods sit far above the corner; response strongly suppressed. |
+| Subduction thrust faults respond strongly (Cochran) | High pore pressure → small effective σ → shorter t_a → less suppression. |
+| Tremor responds far more than earthquakes (Rubinstein) | Near-lithostatic pore pressure *and* transiently enormous τ̇ during slow-slip episodes → t_a collapses → corner frequency enters the tidal band. |
+| Sensitivity rose before Ridgecrest (Beaucé) | β rising = τ̇ rising and/or σ_eff falling = approaching failure. Exactly what a precursor should be. |
+
+**Two sharp, falsifiable predictions.**
+
+1. **Spectral slope.** If tidal periods lie well above the corner frequency, the
+   response should scale roughly as **1/ω across the tidal band** — i.e. the
+   harmonic response spectrum should show a ~1/frequency slope, with the 18.61 yr
+   nodal term responding most strongly, then Sa, Ssa, Mm, Mf, and the semidiurnal
+   constituents least. **A monotonic ranking of constituents by period.**
+   If the observed spectrum is flat, this model is wrong.
+
+2. **Spatial correlation.** β should correlate with independent estimates of pore
+   pressure and geodetic strain rate. Both are measurable (GPS/InSAR strain,
+   seismic velocity ratios, hydrological models) — so β can be validated against
+   data that has nothing to do with celestial mechanics.
+
+Prediction 2 is the important one. It provides an **external validation channel**
+for the whole framework that does not route through earthquake forecasting at all.
+If β correlates with GPS strain rate, the quantity is real regardless of whether
+it improves forecasts.
+
+**Consequence for the "all bases" question.**
+
+This gives a *physical* answer to which harmonic orders should matter: those where
+the tidal potential has genuine amplitude (CTE/HW95, hypothesis 3) **and** the
+period exceeds the nucleation time (this hypothesis). That selection likely favours
+the long-period constituents.
+
+Worth stating carefully: those timescales — fortnightly, monthly, annual, 18.6-year
+— overlap the ones traditional astrology emphasises. That is a **coincidence of
+timescale arising from the same orbital mechanics**, not evidence for interpretive
+claims. It explains why both systems attend to the same periods without implying
+anything about meaning.
+
+**Consequence for Resonant Finder / Star Seer.**
+
+If the fault is a filter, then "resonance points" should be defined on the
+**forced response**, not the forcing. Response = forcing convolved with the
+transfer function, which shifts and smooths peaks relative to exact geometric
+alignment. **Search the response, not the stimulus.** This is a concrete
+architectural correction for those applications.
+
+**Failure conditions.** The linear small-perturbation treatment may not apply; the
+Beeler–Lockner second response mode may dominate; t_a may be unresolvable given
+catalogue sizes; the 1/ω slope may be masked by catalogue artifacts with their own
+spectral structure (Mc drift, hydrological aliasing). Agenda item 1 resolves the
+first two; the synthetic-null self-test (hypothesis 7) addresses the last.
+
+---
+
+## 10. Import statistical machinery from pulsar timing arrays
+
+Detecting a tiny correlated periodic signal buried in red noise, with rigorous
+false-alarm control, is the **central problem of pulsar timing array analysis** —
+and the PTA community has spent two decades building machinery for exactly it:
+
+- Red-noise-aware Bayesian model comparison
+- Marginalisation over unknown noise spectral indices
+- Correlated-noise-aware significance estimation
+- Rigorous, well-tested false-alarm control on periodic detections
+
+The seismological tidal-triggering literature generally uses the Schuster test,
+which assumes independent samples and has no red-noise treatment. Earthquake
+catalogues are strongly red (aftershock clustering) — precisely the condition PTA
+methods were built for.
+
+**This looks like an under-exploited transfer.** The statistical problem shape is
+the same; the field is different, so the tooling has not crossed over. Worth a
+dedicated session in the next research pass.
+
+Related transferable domains: asteroseismic mode identification (power spectra with
+correlated noise), and gravitational-wave matched filtering (known-waveform search
+with rigorous detection statistics — relevant if the transfer function gives us a
+predicted response waveform to match against).
