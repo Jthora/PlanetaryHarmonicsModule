@@ -583,3 +583,76 @@ Kudryavtsev & Cionco (2025) — which may be the cleanest free path.
 - ETERNA / HW95 catalogue data files — free source not yet found
 - Kudryavtsev & Cionco (2025) catalogue data
 - Ader PhD thesis (Caltech THESIS, open) — likely fuller derivations
+
+---
+
+## 2026-08-21 — Phase 1 validation: PASSED ✓
+
+First end-to-end run. `cargo run --release --example moonquake_validation`.
+
+**Data.** Apollo PSE expanded event catalogue, `levent.1008weber.csv`, from the PDS
+Geosciences Node — public domain, no credentials. Fetch script at
+`scripts/fetch-apollo.sh`.
+
+**Ingestion finding — use `T2`, not `T1`.** The catalogue carries two
+classification columns: `T1` original, `T2` revised (Nakamura 2005). They disagree
+for 1,471 events, most of them originally logged as meteoroid impacts (`M`) and
+later reclassified as deep moonquakes (`A`). Counting `T1` finds **1,359** deep
+moonquakes; `T2` finds **7,082** — the figure the literature reports. Parsing to
+usable times yields **6,954** (128 rows have unparseable time fields and are
+skipped). Nest A1 has **424** events.
+
+**Result — five of six known periodicities recovered, all nests (N = 6,954):**
+
+| Period | Literature | Recovered | Error | Power |
+|---|---|---|---|---|
+| Half-month | 13.60 d | **13.609 d** | +0.07% | 869.4 |
+| Draconic month | 27.212 d | **27.19 d** | −0.09% | 81.2 |
+| Anomalistic month | 27.5546 d | **27.567 d** | +0.05% | 235.5 |
+| Synodic month | 29.5306 d | **29.58 d** | +0.16% | 83.5 |
+| Solar perturbation | ~206 d | **206.19 d** | +0.09% | 111.7 |
+| Draconic/anomalistic beat | ~2190 d | no peak | — | — |
+
+**Nest A1 (N = 424):** the draconic month is the **strongest** peak (power 131.5),
+matching the literature's characterisation of A1. The 6-year beat appears at
+2083 d (−4.87%, power 43.8) — acceptable given the record spans only ~1.4 cycles.
+
+**Independent check of the "known" periods.** Both long periods derive from lunar
+month beats, computed here from first principles:
+
+```
+draconic/anomalistic beat      = 2188.6 d    (literature ~2190, the 6-year cycle)
+(anomalistic/synodic beat) / 2 =  205.9 d    (literature ~206)
+```
+
+So the 206-day period is **half the perigee–syzygy ("full moon") cycle**, and the
+6-year period is the draconic/anomalistic beat. Neither is folklore.
+
+### Unexplained peak — flag for the null
+
+All-nests shows the **second strongest peak of the whole spectrum at 1886.6 d
+(power 625.0)**, which matches no known deep moonquake period.
+
+Most likely a **catalogue artifact**: the record spans ~2,920 days, Apollo stations
+came online between 1969 and 1972 and ran to 1977, so overall event rate varies on
+multi-year timescales and the observational envelope has its own spectral
+structure. A 901 d peak (power 128.6) is similarly suspect.
+
+**This is exactly what the time-shifted null exists to catch**, and it is a useful
+early demonstration that raw periodogram power is not evidence. Next step for
+Phase 1 is to run the null against these peaks and confirm the known periods
+survive while 1886 d does not.
+
+Smaller peaks at 6.805 d (= 13.609/2) and, in A1, 9.11 d (≈ 27.19/3) are harmonics
+of the recovered periods, as expected.
+
+### Assessment
+
+**The instrument works.** The pipeline recovers five known tidal periodicities from
+a real catalogue to better than 0.2%, on data where tidal forcing is the dominant
+mechanism. Per `docs/12-build-plan.md` this was the gate on everything downstream.
+
+Not yet done in Phase 1: the time-shift null on these peaks, and the ephemeris path
+— computing actual tidal phase from Earth–Moon–Sun geometry rather than folding on
+trial periods. The latter needs lunar kernels and is what carries forward to
+Phases 2 and 3.

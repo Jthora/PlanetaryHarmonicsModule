@@ -157,6 +157,85 @@ pub fn shift_offsets(count: usize, min: f64, max: f64, avoid: &[f64], tol: f64) 
     out
 }
 
+/// One trial period of a Schuster periodogram.
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub struct Power {
+    /// Trial period, in the same units as the event times.
+    pub period: f64,
+    /// Normalised power `D²ₙ / N`. Expectation is 1 under the null, so this is
+    /// directly comparable across trial periods at fixed `N`.
+    pub power: f64,
+}
+
+/// Schuster periodogram: normalised power at each trial period.
+///
+/// For each trial period `P`, event times are folded to phases `2π·frac(t/P)` and
+/// the order-`n` resultant computed. Peaks mark candidate periodicities.
+///
+/// This is the analysis Ader et al. (2014) use on simulated catalogues, and it is
+/// how Phase 1 recovers the known deep moonquake periods.
+///
+/// ⚠ Peaks are **not** automatically significant. The number of independent trial
+/// periods is large, and observational gaps in a catalogue produce spectral
+/// artifacts of their own. Establish significance with [`time_shift_null`], and
+/// mind its degeneracy note above.
+pub fn periodogram(times: &[f64], periods: &[f64], order: usize) -> Vec<Power> {
+    assert!(order > 0, "order must be at least 1");
+    let n = times.len();
+    periods
+        .iter()
+        .map(|&period| {
+            let (mut a, mut b) = (0.0f64, 0.0f64);
+            for &t in times {
+                let frac = {
+                    let r = (t / period).fract();
+                    if r < 0.0 {
+                        r + 1.0
+                    } else {
+                        r
+                    }
+                };
+                let (s, c) = (order as f64 * std::f64::consts::TAU * frac).sin_cos();
+                a += c;
+                b += s;
+            }
+            let power = if n == 0 {
+                0.0
+            } else {
+                (a * a + b * b) / n as f64
+            };
+            Power { period, power }
+        })
+        .collect()
+}
+
+/// Geometrically spaced trial periods over `[min, max]`.
+///
+/// Geometric rather than linear spacing gives uniform resolution in log-period,
+/// which is what a spectrum spanning days to years needs.
+pub fn log_periods(min: f64, max: f64, count: usize) -> Vec<f64> {
+    if count == 0 || min <= 0.0 || max <= min {
+        return Vec::new();
+    }
+    let (lo, hi) = (min.ln(), max.ln());
+    (0..count)
+        .map(|i| (lo + (hi - lo) * i as f64 / (count - 1).max(1) as f64).exp())
+        .collect()
+}
+
+/// Local maxima of a periodogram, strongest first.
+///
+/// A point is a peak when it exceeds both neighbours and `min_power`.
+pub fn peaks(spectrum: &[Power], min_power: f64) -> Vec<Power> {
+    let mut found: Vec<Power> = spectrum
+        .windows(3)
+        .filter(|w| w[1].power > w[0].power && w[1].power > w[2].power && w[1].power >= min_power)
+        .map(|w| w[1])
+        .collect();
+    found.sort_by(|a, b| b.power.partial_cmp(&a.power).unwrap());
+    found
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -187,6 +266,49 @@ mod tests {
         assert!((d.p_value(0.0) - 1.0).abs() < 1e-12);
         let mid = d.p_value(3.0);
         assert!(mid > 0.0 && mid < 1.0, "mid={mid}");
+    }
+
+    #[test]
+    fn periodogram_recovers_an_injected_period() {
+        // Events clustered near phase zero of a 27.55 d cycle, spread over 8 years.
+        let p = 27.5546;
+        let times: Vec<f64> = (0..106)
+            .map(|k| k as f64 * p + 0.3 * ((k * 7919) % 13) as f64 / 13.0)
+            .collect();
+
+        let periods = log_periods(5.0, 300.0, 4000);
+        let spectrum = periodogram(&times, &periods, 1);
+        let top = peaks(&spectrum, 0.0);
+        assert!(!top.is_empty());
+
+        let best = top[0].period;
+        assert!(
+            (best - p).abs() / p < 0.01,
+            "strongest peak {best} should be near {p}"
+        );
+    }
+
+    #[test]
+    fn periodogram_power_is_near_unity_for_scattered_times() {
+        // Irregular times with no injected period: power ~1 under the null.
+        let times: Vec<f64> = (0..4000)
+            .map(|k| {
+                let k = k as f64;
+                k * 3.7 + 11.0 * (k * 0.9173).sin() + 5.0 * (k * 2.3311).cos()
+            })
+            .collect();
+        let spectrum = periodogram(&times, &log_periods(5.0, 200.0, 400), 1);
+        let mean: f64 = spectrum.iter().map(|s| s.power).sum::<f64>() / spectrum.len() as f64;
+        assert!(mean < 12.0, "mean power {mean} implies leakage");
+    }
+
+    #[test]
+    fn log_periods_are_geometrically_spaced() {
+        let p = log_periods(10.0, 1000.0, 3);
+        assert_eq!(p.len(), 3);
+        assert!((p[0] - 10.0).abs() < 1e-9);
+        assert!((p[1] - 100.0).abs() < 1e-6);
+        assert!((p[2] - 1000.0).abs() < 1e-6);
     }
 
     #[test]

@@ -14,6 +14,7 @@
 //! - [`stats`] — the generalised Schuster test and time-shifted null distributions
 //! - [`ephemeris`] — batched geometric states, wrapping `rustspice-core`
 //! - [`catalog`] — event catalogues
+//! - [`apollo`] — Apollo PSE catalogue ingestion (Phase 1 validation)
 //!
 //! # A standing invariant
 //!
@@ -21,6 +22,7 @@
 //! (Heimisson & Avouac 2020, eq. 6: `⟨R⟩ = r` exactly). Tides redistribute *when*
 //! events occur; they do not create them. Any output implying otherwise is a bug.
 
+pub mod apollo;
 pub mod catalog;
 pub mod ephemeris;
 pub mod harmonics;
