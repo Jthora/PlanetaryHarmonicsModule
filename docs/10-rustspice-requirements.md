@@ -9,6 +9,58 @@ ephemeris precision*.
 
 ---
 
+## 0. Status against RustSPICE `v0.1.0` (c7f180b) — most of this is already met
+
+Revised after pulling the restructured RustSPICE. The picture is much better than
+this document originally assumed.
+
+**Already satisfied:**
+
+| Requirement | Status |
+|---|---|
+| Batched evaluation | ✅ "batched sweeps" implemented |
+| Kernel loading from bytes | ✅ implemented |
+| Time conversion (`str2et`, `et2utc`, `timout`) | ✅ implemented |
+| Ephemerides (`spkezr`, `spkpos`) with light time | ✅ implemented |
+| Reference frames (`pxform`, `sxform`) | ✅ implemented |
+| Body constants (`bodvrd`) → GM values | ✅ implemented |
+| Aberration correction selectable | ✅ passed as a parameter, so `NONE` available |
+| Error handling | ✅ SPICE errors as exceptions; `rsspice` re-exported for Rust-side matching |
+
+**The composition model resolves §8 entirely.** RustSPICE now states that layers
+compose *as Rust libraries*, with WASM only at the leaf — "nothing consumes
+anything else through WASM." So PlanetaryHarmonics links `rustspice-core` as a
+normal Rust dependency and there is **no WASM boundary between us at all**. The
+boundary-crossing concerns in §8 apply only to our own eventual TypeScript surface,
+not to this seam. Zero-copy and batching remain good practice internally, but they
+are no longer an inter-module requirement.
+
+**Correction to §6.** This document asked for two-part Julian date arithmetic.
+**Not needed.** SPICE ET is seconds past J2000 in f64; over a 130-year baseline
+(~4.1×10⁹ s) f64 gives ~10⁻⁶ s resolution. Microsecond precision over the full
+catalogue span is far beyond our ~1° phase requirement. Withdrawn.
+
+**Still open / to confirm:**
+
+1. **Ecliptic of date** — does `pxform` reach it with the standard kernel set, or
+   do we need a supplementary frame kernel?
+2. **High-precision Earth orientation (ITRF93)** — supported via binary PCK, or
+   should we implement ICRF→ITRF from IERS EOP ourselves?
+3. **`MOON_PA` lunar frames** — needed for Phase 1 moonquake validation. Supported
+   once the lunar PCK/FK are loaded?
+4. **Kernel delivery** — README lists caching and subsetting as not yet built. DE440
+   is large; subsetting to the bodies and epochs we need would matter for browser
+   delivery, though not for native batch runs.
+5. **Multi-target batching** — we always need all ~11 bodies at each epoch. Does the
+   batched sweep API accept a target list, or is it one target per sweep?
+
+**Note on validation:** RustSPICE binds `rsspice` (pure-Rust SPICELIB port) and
+cross-validates against ANISE to bit-identical agreement. That is a stronger
+provenance story than we required, and it means ephemeris correctness is not a
+risk we need to carry.
+
+---
+
 ## 1. The headline: precision is not the constraint, correctness is
 
 Worth stating up front so effort goes to the right place.
@@ -244,10 +296,18 @@ position suggests, because deep moonquakes are the first validation phase.
 
 ## 12. Open questions for the RustSPICE maintainers
 
-1. Which branch is canonical — `main`, `pivot/wasm-ts-layer`, or `v1.0.0`? The
-   submodule currently pins `main`; we will repoint on request.
-2. Is high-precision Earth orientation (binary PCK / ITRF) in scope, or should we
-   implement the ICRF→ITRF transform ourselves from IERS EOP series?
-3. Are lunar frames (`MOON_PA`) supported or planned?
-4. What is the current kernel-loading model — filesystem, embedded, or bytes?
-5. Is the existing API scalar or batch? If scalar, is a columnar path feasible?
+Superseded by §0 — questions 4 and 5 are answered (bytes; batched sweeps exist),
+and the branch question is resolved (submodule now pins `v0.1.0` / `c7f180b`).
+
+Remaining, in priority order:
+
+1. **Ecliptic of date** via `pxform` — available with the standard kernel set?
+2. **`MOON_PA`** lunar frames — supported? Needed earlier than it looks, because
+   deep moonquakes are our first validation phase.
+3. **ITRF93 / high-precision Earth orientation** — in scope, or ours to implement?
+4. **Multi-target batched sweeps** — target *list* per sweep, or one target each?
+5. **Kernel subsetting** — planned? Matters for browser delivery of DE440, not for
+   native runs.
+
+Nothing here blocks us. Items 1–3 are the ones that shape whether we implement
+frame handling ourselves.

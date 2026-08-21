@@ -22,6 +22,7 @@ interpretive mappings live upstream in `AstrologyCore`.
 | [08-hypotheses.md](08-hypotheses.md) | Generated research hypotheses, prioritised |
 | [09-deep-dive-agenda.md](09-deep-dive-agenda.md) | Equations and methods to derive next |
 | [10-rustspice-requirements.md](10-rustspice-requirements.md) | Data and API spec for the RustSPICE layer |
+| [11-osint-access.md](11-osint-access.md) | Free literature access routes; no institutional credentials |
 | [bibliography.md](bibliography.md) | Full citations, tiered |
 
 ## Dependency chain

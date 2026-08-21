@@ -224,6 +224,8 @@ schedule.
 | 9 | β = τ̇/(aσ) synthesis | **Very high** | Medium | **1** — partly confirmed |
 | 10 | PTA statistical machinery | High | Low | **1** — confirmed viable |
 | 11 | Hydrological forcing as second probe | **Very high** | Low | **1** |
+| 12 | Broadband response spectroscopy | **Very high** | High | **1** — the framing |
+| 13 | Natural amplitude experiments | **Very high** | **Low** | **0** — validity gates |
 
 Ideas 1, 2 and 3 together would convert this project from a correlation search
 into a physically-grounded inverse problem with a built-in artifact test. That is
@@ -340,6 +342,22 @@ peaks where theory says one should be.
 region of interest. The band-pass reconstruction is inferred from abstracts, not
 from the papers. **Obtain the primary sources before building on this.**
 
+> **THIRD-PASS UPDATE — primary sources obtained; this note supersedes the
+> reconstruction below, which was correct in outline and wrong in structure.**
+> Band-pass is **confirmed** (Ader et al. 2014: "a critical period T_a, at which
+> the amplitude of the seismicity response peaks"). But β ∝ τ̇/(Aσ₀) **conflated two
+> separate roles**. The corrected relations:
+>
+> ```
+> amplitude    R̃/r = Δτ / (aσ̄)          ← Aσ₀ ALONE sets sensitivity
+> peak period  T_a = 2π Aσ₀ / τ̇          ← τ̇ only sets WHERE the peak sits
+> ```
+>
+> Stressing rate does not set sensitivity. The corrected version is **stronger**:
+> the two observables are separable, so the spectrum yields **Aσ₀ and τ̇ as two
+> independent measurements**. See [07-research-log.md](07-research-log.md),
+> third pass.
+
 **Prediction 2 (β vs. GPS strain rate / pore pressure) survives and is
 strengthened.** EPSL (2025) finds tidal modulation amplitude for San Andreas LFEs
 is controlled mainly by **background effective stress** — direct published support
@@ -425,3 +443,138 @@ hydrological amplitude is badly wrong, it will contaminate rather than calibrate
 
 **Priority: raise to 1.** Low cost, high value, and it converts the project's
 largest identified threat into an asset.
+
+---
+
+## 12. Broadband seismic response spectroscopy ★★★
+
+*Third pass. The natural generalisation of everything assembled so far, and I think
+the strongest framing the project has reached.*
+
+**The idea.**
+
+We now have a theoretical transfer function with a peak at `T_a = 2π Aσ₀/τ̇` and a
+known amplitude law `R̃/r = Δτ/(aσ̄)`. Fitting it needs response measurements at
+**many frequencies**.
+
+Faults are periodically loaded by far more than tides. Enumerate the forcings and
+their bands:
+
+| Forcing | Period range | Amplitude known from |
+|---|---|---|
+| Semidiurnal / diurnal tides | 12–26 h | CTE/HW95 potential |
+| Fortnightly, monthly (Mf, Mm) | 13.7–27.6 d | CTE/HW95 |
+| Atmospheric pressure loading | days–weeks | Reanalysis (ERA5) |
+| Pole tide / Chandler wobble | 433 d | IERS |
+| Semiannual, annual (Ssa, Sa) | 183–365 d | CTE/HW95 |
+| Hydrological loading | annual | GRACE/GRACE-FO, GLDAS |
+| Lunar nodal cycle | 18.61 yr | CTE/HW95 |
+| LOD variations | decadal | IERS |
+
+**That spans roughly six decades of frequency, from hours to decades — and every
+one of them has an independently measurable amplitude.**
+
+**The proposal:** stop asking "does forcing X correlate with seismicity?" and
+instead **measure the fault's frequency response across all of them at once**,
+fitting the rate-and-state transfer function to the whole spectrum.
+
+**Why this is the right framing.**
+
+1. It is what the theory actually requires. A transfer function is a curve;
+   measuring it at one frequency is a single point.
+2. Six decades of coverage means `T_a` is **inside** the measured band for both
+   ordinary crust (~decades) and tremor (~days). We could locate the peak rather
+   than extrapolate toward it.
+3. Every forcing has a known input amplitude, so the response is a **ratio** —
+   output over known input. Ratios are far more robust to catalogue artifacts than
+   raw correlations.
+4. It subsumes hypotheses 1, 3 and 11 into one coherent programme, and it is the
+   part of the space published work has **not** occupied — existing studies are
+   single-fault and single-band (diurnal/semidiurnal).
+5. It gives the multi-basis premise a physical answer: the orders that matter are
+   those with **forcing power** and **high transfer-function gain**.
+
+**Name:** *broadband seismic response spectroscopy*. The fault is the sample; the
+periodic loads are the probe; the transfer function is the spectrum.
+
+**Failure conditions.** Different forcings act with different spatial patterns and
+different stress orientations, so responses are not automatically comparable —
+each must be projected onto fault geometry (doc 09 §5) before ratios mean
+anything. Amplitude uncertainties differ wildly by forcing. And catalogue
+artifacts have their own spectral structure (next hypothesis).
+
+---
+
+## 13. Natural amplitude experiments already present in the data ★★
+
+*Third pass. Controls that need no external data and no new physics.*
+
+The theory predicts response scales with **forcing amplitude at fixed frequency**.
+The tidal spectrum provides several places where amplitude varies while frequency
+is essentially fixed — controlled comparisons already sitting in the data.
+
+### 13a. Same-band constituent ratios
+
+M2, S2 and N2 are all semidiurnal; O1, K1, P1 all diurnal. Within a band the
+transfer function is effectively constant, so **response ratios should equal the
+known amplitude ratios** from the CTE/HW95 catalogue.
+
+This isolates the amplitude law from the frequency law. Real triggering tracks
+amplitude; an artifact has no reason to.
+
+### 13b. M2 versus S2 — a built-in cultural-noise discriminator ★
+
+**S2 has a period of exactly 12.000 h.** It is therefore locked to the day–night
+cycle, and earthquake catalogue completeness varies with time of day (cultural
+noise raises detection thresholds during working hours). S2 is also contaminated
+by the solar *thermal/atmospheric* tide, which is not a body tide at all.
+
+**M2 is 12.42 h**, so it precesses through local solar time over a lunar month and
+**decorrelates from any time-of-day detection artifact**.
+
+Therefore:
+
+- Signal at S2 but not M2 → **cultural noise or thermal tide, not triggering**
+- Signal at M2 ≥ S2, in the ratio CTE predicts → **real**
+
+Same logic applies in the diurnal band: **K1 (23.93 h) and S1 (24.00 h) are nearly
+degenerate with the diurnal detection artifact and are essentially unusable.
+O1 (25.82 h) and P1 (24.07 h) are safer.**
+
+This is a cheap, decisive artifact test that requires no external data at all, and
+it should be run **before** any positive result is believed.
+
+### 13c. Perigee–apogee as an amplitude knob
+
+Lunar distance varies ~5.5% over the anomalistic month. Tidal amplitude goes as
+1/d³, so amplitude varies **~18%** — a large, clean modulation at 27.55 d with
+independently known phase.
+
+Response should track it. A within-dataset amplitude test with excellent
+signal-to-noise.
+
+### 13d. The 18.61-year nodal envelope
+
+The lunar nodal cycle modulates diurnal constituent amplitudes by roughly ±11%.
+Over a 130-year catalogue that is **seven full cycles**.
+
+If the measured diurnal response amplitude oscillates with an 18.61-year envelope
+of the predicted depth and phase, that is a **very distinctive fingerprint** — a
+slow amplitude modulation at a period where catalogue artifacts have no plausible
+structure. It is hard to imagine an instrumental effect that mimics it.
+
+### 13e. Explicit alias analysis — required, not optional
+
+Any periodicity in catalogue completeness (daily cultural noise, weekly patterns,
+seasonal station maintenance, network upgrades) will **beat against tidal
+frequencies**. Before any analysis: enumerate known catalogue periodicities,
+compute alias frequencies against the constituent list, and **blacklist the
+collisions**.
+
+Cheap, and it prevents the most embarrassing class of false positive.
+
+---
+
+**Priority.** 12 and 13 are both high-value. 13b, 13c and 13e are *low cost* and
+should be implemented early — they are validity gates, not analyses. Nothing
+positive should be reported before 13b and 13e have been run.
