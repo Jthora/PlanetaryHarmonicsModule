@@ -140,3 +140,135 @@ Currently the most dangerous unaddressed confounder in the project.
 6. Deep moonquake catalogue structure and prior periodicity analyses
 
 Carried into [09-deep-dive-agenda.md](09-deep-dive-agenda.md).
+
+---
+
+## 2026-08-21 — Second pass: rate-and-state response theory
+
+**Scope:** agenda items 1 (transfer function), 2 (spectral prediction test),
+PTA statistical methods. Triggered by hypothesis 9.
+
+### Finding 1 — the spectral prediction in hypothesis 9 was wrong ✗
+
+The first-pass guess was a simple low-pass with response ∝ 1/ω across the tidal
+band, giving a monotonic ranking of constituents by period (nodal > Sa > Ssa > Mm >
+Mf > semidiurnal).
+
+**The literature does not support this.** The actual result (Ader, Lapusta, Avouac
+& Ampuero 2014, *GJI* 198, 385–413; Heimisson & Avouac 2020, *GRL*) is a
+**two-regime response** separated by a critical period.
+
+Define the Dieterich characteristic time and critical period:
+
+```
+t_a = a σ / τ̇          T_c ≈ 2π t_a
+```
+
+- **T ≪ t_a** — seismicity rate **tracks stress**. Response amplitude ∝ A,
+  approximately flat in period.
+- **T ≫ t_a** — seismicity rate **tracks stressing rate**. Response amplitude
+  ∝ A/T, *falling* with increasing period.
+
+So long-period constituents are **not** automatically favoured. The nodal-term
+ranking prediction is dead.
+
+**What survives, and is sharper:** the response has a **knee, and plausibly a peak,
+near T ≈ t_a**. A 2012 AGU abstract from the same group describes an amplitude
+maximum at a characteristic period *decreasing at both smaller and larger periods*
+— i.e. **band-pass**.
+
+*Reconstruction (unverified — see caveat):* band-pass behaviour requires **two**
+timescales, not one. The Dieterich relaxation time t_a governs the long-period
+roll-off; a separate **nucleation duration** governs the short-period cutoff
+(Beeler & Lockner's original argument). Response peaks between them.
+
+If correct, this is *better* for the inverse problem than the original guess: the
+spectrum would identify **two** fault properties rather than one, and a peak is far
+more diagnostic than a slope — an artifact can produce a slope, but is unlikely to
+produce a peak at a physically predicted location.
+
+**Caveat, important:** Heimisson & Avouac state their analytical model is
+**not valid for periods similar to t_a** — precisely the region of interest. The
+band-pass reconstruction above is inference from abstracts, not from the papers
+themselves. Both primary sources are paywalled and were not obtained this pass.
+**Do not build on this until the actual equations are in hand.**
+
+### Finding 2 — hypothesis 1 is already an active research programme
+
+Frequency-dependent tidal sensitivity as a probe of fault properties is
+**published work**, not a novel idea:
+
+- **Beeler et al. (2018)**, *JGR* 123 — *Constraints on friction, dilatancy,
+  diffusivity, and effective stress from low-frequency earthquake rates on the deep
+  San Andreas Fault*
+- **EPSL (2025)**, *Probing lower-crustal fault properties with frequency-dependent
+  tidal tremor triggering* — San Andreas LFEs. Finds that **modulation amplitude is
+  controlled mainly by background effective stress**, while the **diurnal vs.
+  semidiurnal variation is controlled by frictional properties and nucleation
+  time.**
+
+**This substantially validates hypothesis 9** — β does track effective normal
+stress, as published work confirms. It also means the core idea is not ours to
+claim.
+
+*Strategic consequence.* Novelty must move to where the existing work is not:
+
+1. **Long-period constituents.** Published work is diurnal/semidiurnal. Mf, Mm,
+   Ssa, Sa, and the 18.61 yr nodal term are largely unexploited.
+2. **Global scale.** Existing studies are single-fault (San Andreas, Cascadia). A
+   global β field is genuinely new.
+3. **The multi-basis / generalised Doodson extension.** Still unclaimed.
+4. **Other bodies.** Heimisson & Avouac explicitly frame their model as applicable
+   to "other solid-surface bodies" — supporting the moonquake plan.
+
+This is a better position than it sounds: the mechanism is now *established
+literature we can cite* rather than something we must prove.
+
+### Finding 3 — pulsar timing array methods transfer cleanly ✓
+
+Hypothesis 10 confirmed as viable. PTA analysis solves the same statistical
+problem shape — small periodic signal, strongly red noise, rigorous false-alarm
+control:
+
+- Red noise modelled as a **Gaussian process in the Fourier domain** with
+  harmonically related sinusoids
+- **Analytic marginalisation** over individual Fourier component amplitudes while
+  fitting the power-law amplitude and spectral index of the underlying process
+- **Hierarchical Bayesian** treatment with hyperparameter marginalisation
+- False-alarm null estimated **empirically**, because correlations make analytic
+  nulls unreliable
+
+Mature tooling exists (`enterprise`, and the EPTA/NANOGrav/MeerKAT analysis
+stacks).
+
+**Direct mapping to our problem:** catalogue red noise (aftershock clustering, Mc
+drift, hydrological loading) becomes a fitted power-law Gaussian process; tidal
+harmonics are the deterministic signal on top. Strictly more rigorous than the
+Schuster test, which assumes independent samples and has no red-noise treatment.
+
+Pleasingly, PTA's empirical false-alarm estimation is the same instinct as our
+time-shifted null (doc 04 §6a) — independent convergence on the same safeguard.
+
+### Finding 4 — the hydrological confounder is also the control
+
+*Tidal and hydrological seismicity modulations reveal pore fluid diffusion during
+earthquake nucleation* (**Science Advances**, sciadv.ady6350) treats tidal and
+seasonal/hydrological modulation **jointly** to infer pore fluid diffusion.
+
+Reframes doc 07's "most dangerous confounder": hydrological loading is a
+**second periodic forcing with independently known amplitude and phase**. Rather
+than merely controlling for it, use it as a **calibration signal** — it probes the
+same transfer function at annual period, where tidal amplitude is weak.
+
+Two forcings at different periods constrain the transfer function far better than
+one. The confounder becomes an instrument.
+
+### Not obtained this pass
+
+- Ader et al. 2014 full text (cert failure on the Caltech mirror; paywalled at OUP)
+- Heimisson & Avouac 2020 full text
+- Science Advances paper full text (403)
+- CTE / HW95 constituent catalogues
+
+All four remain on the critical path. Acquiring the actual equations is the
+blocking task for the next pass.

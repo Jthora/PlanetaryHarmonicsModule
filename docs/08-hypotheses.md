@@ -221,8 +221,9 @@ schedule.
 | 4 | β tomography + resolution | High | High | 3 |
 | 8 | Ocean loading precompute | Required | High | 3 |
 | 6 | Moonquake interior inversion | Medium | Medium | 4 |
-| 9 | β = τ̇/(aσ) synthesis | **Very high** | Medium | **1** |
-| 10 | PTA statistical machinery | High | Low | 2 |
+| 9 | β = τ̇/(aσ) synthesis | **Very high** | Medium | **1** — partly confirmed |
+| 10 | PTA statistical machinery | High | Low | **1** — confirmed viable |
+| 11 | Hydrological forcing as second probe | **Very high** | Low | **1** |
 
 Ideas 1, 2 and 3 together would convert this project from a correlation search
 into a physically-grounded inverse problem with a built-in artifact test. That is
@@ -270,12 +271,9 @@ normal stress.**
 
 **Two sharp, falsifiable predictions.**
 
-1. **Spectral slope.** If tidal periods lie well above the corner frequency, the
-   response should scale roughly as **1/ω across the tidal band** — i.e. the
-   harmonic response spectrum should show a ~1/frequency slope, with the 18.61 yr
-   nodal term responding most strongly, then Sa, Ssa, Mm, Mf, and the semidiurnal
-   constituents least. **A monotonic ranking of constituents by period.**
-   If the observed spectrum is flat, this model is wrong.
+1. ~~**Spectral slope.**~~ **SUPERSEDED — see revision note below.** The original
+   1/ω monotonic-ranking prediction was tested against the literature in the second
+   research pass and does not hold.
 
 2. **Spatial correlation.** β should correlate with independent estimates of pore
    pressure and geodetic strain rate. Both are measurable (GPS/InSAR strain,
@@ -310,9 +308,49 @@ architectural correction for those applications.
 
 **Failure conditions.** The linear small-perturbation treatment may not apply; the
 Beeler–Lockner second response mode may dominate; t_a may be unresolvable given
-catalogue sizes; the 1/ω slope may be masked by catalogue artifacts with their own
-spectral structure (Mc drift, hydrological aliasing). Agenda item 1 resolves the
-first two; the synthetic-null self-test (hypothesis 7) addresses the last.
+catalogue sizes; spectral structure may be masked by catalogue artifacts (Mc drift,
+hydrological aliasing). The synthetic-null self-test (hypothesis 7) addresses the
+last.
+
+---
+
+### Revision note — 2026-08-21, second research pass
+
+**Prediction 1 was wrong and is withdrawn.** Ader et al. (2014) and Heimisson &
+Avouac (2020) give a **two-regime** response, not a simple low-pass:
+
+```
+t_a = a σ / τ̇                    T_c ≈ 2π t_a
+
+T ≪ t_a :  seismicity rate tracks stress          amplitude ∝ A      (flat in T)
+T ≫ t_a :  seismicity rate tracks stressing rate  amplitude ∝ A / T  (falls with T)
+```
+
+Long-period constituents are therefore **not** automatically favoured, and the
+monotonic ranking (nodal > Sa > Ssa > Mm > Mf > semidiurnal) is dead.
+
+**Replacement prediction — the response spectrum has a peak near T ≈ t_a.**
+A band-pass shape requires two timescales: t_a governing the long-period roll-off,
+and a separate nucleation duration governing the short-period cutoff. If so the
+spectrum identifies **two** fault properties, and a **peak at a predicted location**
+is far more diagnostic than a slope — artifacts readily produce slopes, but rarely
+peaks where theory says one should be.
+
+⚠ Heimisson & Avouac state their model is **not valid near T ≈ t_a** — exactly the
+region of interest. The band-pass reconstruction is inferred from abstracts, not
+from the papers. **Obtain the primary sources before building on this.**
+
+**Prediction 2 (β vs. GPS strain rate / pore pressure) survives and is
+strengthened.** EPSL (2025) finds tidal modulation amplitude for San Andreas LFEs
+is controlled mainly by **background effective stress** — direct published support
+for β ∝ 1/(aσ).
+
+**Priority consequence.** Hypothesis 1 (spectrum as inverse method) is **already an
+active research programme** — Beeler et al. (2018), EPSL (2025). It is established
+literature we can cite rather than a claim we must defend, but it is not ours.
+Novelty must move to: **long-period constituents** (published work is
+diurnal/semidiurnal only), **global scale** (published work is single-fault), the
+**generalised Doodson extension**, and **other bodies**.
 
 ---
 
@@ -340,3 +378,50 @@ Related transferable domains: asteroseismic mode identification (power spectra w
 correlated noise), and gravitational-wave matched filtering (known-waveform search
 with rigorous detection statistics — relevant if the transfer function gives us a
 predicted response waveform to match against).
+
+---
+
+## 11. Use hydrological loading as a second probe, not just a confounder ★★
+
+*Added second pass. Supersedes the framing of hydrological loading as a pure
+threat.*
+
+**The reframe.**
+
+Doc 07 flagged seasonal hydrological loading as the project's most dangerous
+confounder, because it is annual and so are Sa and Ssa. That framing was
+incomplete.
+
+Hydrological loading is a **second periodic forcing with independently measurable
+amplitude and phase** — from GRACE/GRACE-FO gravity, GLDAS land surface models,
+well levels, and snow load. We do not have to guess it. We can measure it.
+
+Which means it is not only a nuisance to subtract. It is an **instrument**.
+
+**Why this is powerful.**
+
+The transfer function R(ω), φ(ω) is the object we actually want (hypothesis 1).
+A single forcing probes it at one set of frequencies. **Two forcings with
+independently known amplitudes probe it at two well-separated frequency bands** —
+tidal (hours to weeks) and hydrological (annual) — which constrains the shape far
+better than either alone.
+
+Critically, the annual band is where tidal amplitude is weak and hydrological
+amplitude is strong. They are complementary rather than competing.
+
+**Published precedent.** *Tidal and hydrological seismicity modulations reveal pore
+fluid diffusion during earthquake nucleation* (Science Advances, sciadv.ady6350)
+does exactly this joint treatment to infer pore fluid diffusion. So the approach is
+validated; our extension is scale and constituent coverage.
+
+**It also resolves the confounder cleanly.** Modelling both forcings jointly with
+measured hydrological amplitude means an annual signal gets **attributed**, not
+merely flagged as ambiguous. The confounder stops being a threat to validity and
+becomes a fitted term.
+
+**Failure condition.** Hydrological loading models have real uncertainty, and
+GRACE resolution (~300 km) is coarse relative to fault-scale processes. If the
+hydrological amplitude is badly wrong, it will contaminate rather than calibrate.
+
+**Priority: raise to 1.** Low cost, high value, and it converts the project's
+largest identified threat into an asset.

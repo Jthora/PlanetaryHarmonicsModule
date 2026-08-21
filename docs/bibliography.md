@@ -48,6 +48,46 @@ methodological paper for this project.** Nucleation-time argument; 10⁵–10⁶
 requirement.
 https://www.researchgate.net/publication/228542429
 
+**Ader, T.J., Lapusta, N., Avouac, J.-P. & Ampuero, J.-P. (2014).** Response of
+rate-and-state seismogenic faults to harmonic shear-stress perturbations. *GJI*
+198(1), 385–413. — Tier A. **Critical path.** Two-regime response; critical period
+T_c ≈ 2π t_a. Full text not yet obtained.
+https://academic.oup.com/gji/article/198/1/385/611185
+
+**Heimisson, E.R. & Avouac, J.-P. (2020).** Analytical prediction of seismicity
+rate due to tides and other oscillating stresses. *GRL* 47. — Tier A.
+**Critical path.** Short period → rate scales with stress; long period → with
+stressing rate. Explicitly not valid near T ≈ t_a. Framed as applicable to other
+solid-surface bodies, supporting the moonquake plan.
+https://agupubs.onlinelibrary.wiley.com/doi/abs/10.1029/2020gl090827
+
+**Beeler, N.M. et al. (2018).** Constraints on friction, dilatancy, diffusivity,
+and effective stress from low-frequency earthquake rates on the deep San Andreas
+Fault. *JGR: Solid Earth* 123. — Tier A. Prior art for the spectrum-as-inverse-
+method idea.
+https://agupubs.onlinelibrary.wiley.com/doi/10.1002/2017JB015052
+
+**Probing lower-crustal fault properties with frequency-dependent tidal tremor
+triggering.** *EPSL* (2025). — Tier A. Modulation amplitude controlled by
+background effective stress; diurnal/semidiurnal variation by frictional
+properties and nucleation time. Direct support for β ∝ 1/(aσ).
+https://sciencedirect.com/science/article/pii/S0012821X25002791
+
+**Tidal and hydrological seismicity modulations reveal pore fluid diffusion during
+earthquake nucleation.** *Science Advances*, sciadv.ady6350. — Tier A. Joint
+treatment of tidal and hydrological forcing; basis for hypothesis 11.
+https://www.science.org/doi/10.1126/sciadv.ady6350
+
+**Theoretical constraints on tidal triggering of slow earthquakes.**
+arXiv:2602.06703 (2026). — Tier A/B. Low-pass response for slow earthquakes;
+amplitude falls and phase lag grows with forcing frequency.
+https://arxiv.org/pdf/2602.06703
+
+**Fortnightly modulation of San Andreas tremor and low-frequency earthquakes.**
+*PNAS* 113. — Tier A. Long-period (Mf) modulation — the constituent band our work
+targets.
+https://www.pnas.org/doi/10.1073/pnas.1524316113
+
 **Dieterich, J. (1994).** A constitutive law for rate of earthquake production and
 its application to earthquake clustering. *JGR* 99(B2), 2601–2618. — Tier A.
 Source of the rate-and-state seismicity equation. *To obtain — doc 09 §1.*
@@ -137,6 +177,18 @@ doc 09 §7.*
   Origin of the Schuster test. *doc 09 §6*
 - **Nakamura, Y. et al.** Apollo Passive Seismic Experiment deep moonquake
   catalogue. *doc 09 §10*
+
+---
+
+## Statistical methods — cross-domain
+
+**Pulsar timing array analysis** — red noise as a Fourier-domain Gaussian process,
+analytic marginalisation over Fourier amplitudes, hierarchical Bayesian
+hyperparameter treatment, empirical false-alarm estimation. Tooling: `enterprise`,
+EPTA/NANOGrav/MeerKAT stacks. Basis for hypothesis 10.
+- MeerKAT PTA 4.5-yr data release: https://arxiv.org/pdf/2412.01148
+- EPTA DR2 customised noise models: https://www.aanda.org/articles/aa/full_html/2023/10/aa46842-23/aa46842-23.html
+- Ensemble noise properties of the EPTA: https://academic.oup.com/mnras/article/537/4/3470/7997699
 
 ---
 

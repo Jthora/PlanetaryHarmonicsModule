@@ -7,6 +7,17 @@ obtained, the primary sources, and what it unblocks.
 
 ## 1. Rate-and-state response to periodic forcing ★ TOP PRIORITY
 
+> **Second-pass update.** The simple low-pass guess is **wrong** — see
+> [08-hypotheses.md](08-hypotheses.md) revision note. The literature gives a
+> **two-regime** response split at T_c ≈ 2π t_a: rate tracks *stress* for T ≪ t_a,
+> and *stressing rate* (amplitude ∝ 1/T) for T ≫ t_a. Heimisson & Avouac's
+> analytical model is explicitly **not valid near T ≈ t_a**, which is exactly the
+> region we care about.
+>
+> **Blocking task:** obtain full text of Ader et al. (2014) *GJI* 198, 385–413 and
+> Heimisson & Avouac (2020) *GRL* 47. Both were paywalled/cert-blocked in the
+> second pass. Everything downstream depends on having the actual equations.
+
 **Derive:** amplitude response `R(ω)` and phase lag `φ(ω)` of seismicity rate to
 sinusoidal Coulomb stress forcing, under rate-and-state friction.
 
@@ -228,8 +239,10 @@ EarthquakeNPP (arXiv:2410.08226) for reference implementations.
 ## Suggested order
 
 ```
-1  Rate-and-state transfer function      unblocks hypotheses 1 & 2
-6  Generalised Schuster null              unblocks the statistics
+1  Rate-and-state transfer function      BLOCKED on paper access — unblock first
+11 PTA red-noise statistical machinery   replaces/extends item 6; confirmed viable
+12 Hydrological forcing amplitudes       hypothesis 11 — GRACE/GLDAS
+6  Generalised Schuster null              baseline statistics
 2  CTE / HW95 constituent catalogue       unblocks hypothesis 3
 5  Coulomb projection                     needed for any real feature
 3  Love numbers / IERS Ch.7               needed for correct tensors
@@ -237,6 +250,39 @@ EarthquakeNPP (arXiv:2410.08226) for reference implementations.
 4  Ocean loading Green's functions        the expensive one
 8,9,10  Machinery and data                parallel with the above
 ```
+
+---
+
+## 11. Pulsar timing array statistical machinery *(added second pass)*
+
+**Obtain and adapt:** red noise as a Fourier-domain Gaussian process with power-law
+PSD; analytic marginalisation over Fourier component amplitudes while fitting
+amplitude and spectral index; hierarchical Bayesian hyperparameter marginalisation;
+empirical false-alarm estimation.
+
+**Map to our problem:** catalogue red noise (aftershock clustering, Mc drift,
+hydrological loading) → fitted power-law GP. Tidal harmonics → deterministic signal
+on top. Strictly more rigorous than the Schuster test, which assumes independence.
+
+**Sources:** `enterprise` package; EPTA DR2 noise-model paper; MeerKAT PTA DR.
+
+**Note:** PTA's empirical false-alarm estimation is the same instinct as our
+time-shifted null (doc 04 §6a) — worth checking whether their machinery subsumes it.
+
+---
+
+## 12. Hydrological loading amplitudes *(added second pass)*
+
+**Obtain:** GRACE / GRACE-FO gravity-derived loading, GLDAS land-surface models,
+well level and snow load data. Establish amplitude, phase, and uncertainty of the
+annual loading signal per region.
+
+**Purpose:** hypothesis 11 — use hydrological forcing as a **second probe** of the
+transfer function at annual period, where tidal amplitude is weak, rather than
+merely subtracting it as a confounder.
+
+**Watch:** GRACE spatial resolution (~300 km) is coarse relative to fault-scale
+processes. Quantify whether that is adequate before relying on it.
 
 Items 1, 6 and 2 are the critical path. Together they turn the harmonic framework
 into a physically-grounded inverse problem with analytic significance testing —
