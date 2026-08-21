@@ -75,21 +75,31 @@ Findings:
 - Correlation is facilitated only when the **forcing period exceeds the
   characteristic nucleation time** of frictional instability. Tidal periods are
   near or below it, hence the weak correlation.
-- **~10⁵–10⁶ earthquakes are required** to demonstrate a statistically robust
-  correlation.
+- **~10⁴ earthquakes are required** to demonstrate a statistically robust
+  correlation. ⚠ *Corrected in the fourth pass — this doc originally said 10⁵–10⁶,
+  taken from a search summary and never verified.* The paper's equation 18 gives
+  `N ≥ ln(P_rw)/(Δτ_u/(2aσ_n))²`; worked examples give **6.2×10³–5.5×10⁴** events
+  for Δτ = 0.01 MPa, and the abstract states daily Earth tides require
+  **">13,000 earthquakes to detect."**
 - A **10× increase in tidal stress amplitude gives a 100× decrease** in the number
   of events needed for detection.
 
 **Direct consequences for this project:**
 
-1. The full USGS catalogue pull is a **hard requirement**, not a nice-to-have. Any
-   analysis on fewer than ~10⁵ events above completeness is underpowered by
-   construction.
+1. The full USGS catalogue pull remains worthwhile — but for **coverage and
+   confounder control, not raw statistical power**. At ~10⁴ events needed, ComCat's
+   millions clear the bar easily and many *regional* subsets are viable too. Re-run
+   the doc 04 §7 power analysis with the inverse-square law.
 2. Prioritise **high-amplitude-stress settings** (subduction, coastal, ridges)
    where the quadratic amplitude advantage collapses the sample requirement.
-3. The nucleation-time argument predicts **long-period constituents (Mf, Mm, Ssa,
-   Sa) should correlate better than semidiurnal ones.** This is a sharp, testable
-   prediction and it happens to be where the "planetary cycle" features live.
+3. The nucleation-time argument predicts **long-period constituents should
+   correlate better than semidiurnal ones** — and the fourth pass sharpened this
+   dramatically. Beeler & Lockner give the nucleation duration **t_n ≥ 1 year for
+   the San Andreas**, damping response above 1/t_n. Combined with Ader's critical
+   period T_a ~ 20–200 yr, the predicted responsive band for ordinary earthquakes
+   is **~1 year to ~200 years** — Sa at the edge, the 18.61 yr nodal term and
+   decadal LOD inside, and **all semidiurnal, diurnal, fortnightly and monthly
+   constituents damped.** See doc 07, fourth pass.
 
 Point 3 is the single most useful physical hook in this literature. It gives a
 mechanism-grounded reason to look at long-period orbital terms.

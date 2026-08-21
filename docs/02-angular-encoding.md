@@ -204,16 +204,39 @@ where correlation is most likely to be detectable** — the forcing period excee
 the nucleation time. This is the mechanism-grounded reason to care about slow
 orbital cycles, and it is exactly the regime classical astrology emphasises.
 
-### The novel contribution, stated precisely
+### ⚠ The novelty claim here was wrong — corrected fourth pass
 
-> **A generalised Doodson expansion including planetary arguments.**
+This section originally proposed "a generalised Doodson expansion including
+planetary arguments" as our novel contribution. **It was published in 1995.**
 
-Extend the six Doodson arguments with planetary mean longitudes (λ_Me … λ_Ne),
-subject to the d'Alembert constraint, and evaluate the resulting frequency basis
-as ML features.
+The **HW95 catalogue** (Hartmann & Wenzel 1995, *GRL* 22, 3553) contains **12,935
+tidal waves, of which 1,483 are due to direct planetary effects** — Venus, Jupiter,
+Mars, Mercury, Saturn. Scope: Moon to degree 6, Sun to degree 3, planets to degree
+2. Based on DE200, covering 1850–2150, accurate to better than 1 nGal.
 
-That sentence is publishable, precise, contains no unsupported claim, and is
-genuinely new. It is the single best framing of what this module does.
+Its modern successor is **KSM03** (Kudryavtsev 2004), updated by **Kudryavtsev &
+Cionco (2025)** (arXiv:2508.18111, free) with DE441 and **38 new/updated terms of
+period > ~18 years**, including several new waves near the 18.61-year nodal period.
+
+**This is a gift.** We do not derive the expansion — we *consume* it. An
+authoritative, geodesy-grade basis of 1,483 planetary tidal waves with correct
+amplitudes is exactly the multi-body harmonic feature basis this project wants, and
+using it is a far stronger position than rolling our own.
+
+### The corrected novelty claim
+
+Not the expansion. Rather:
+
+1. Using HW95/KSM03 planetary waves as an **ML feature basis tested against
+   seismicity** — not previously done
+2. **Broadband response spectroscopy** across six decades of forcing frequency
+   ([08-hypotheses.md](08-hypotheses.md) §12)
+3. A **global β field** — published work is single-fault
+4. The **moonquake → tremor → earthquake** validation ladder
+
+The d'Alembert constraint and Fourier-encoding arguments above stand unchanged —
+they remain the right way to *use* the basis, and to extend it to non-tidal angular
+features the catalogues do not cover.
 
 ---
 

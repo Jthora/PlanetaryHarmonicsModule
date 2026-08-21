@@ -409,3 +409,177 @@ belongs in doc 00's claim discipline.
 
 Pulled to `c7f180b` (tag `v0.1.0`). Substantially restructured — see revised
 [10-rustspice-requirements.md](10-rustspice-requirements.md).
+
+---
+
+## 2026-08-21 — Fourth pass: USGS public-domain set and tidal catalogues
+
+**Access.** USGS Publications Warehouse and the USGS Rock Physics Lab page
+(`earthquake.usgs.gov/research/eqproc/rockphysics/pubs.php`) delivered the entire
+Beeler set free — USGS-authored work is public domain. Confirms doc 11's
+prediction that this was the highest-value untried route.
+
+Obtained: Beeler & Lockner (2003), Beeler et al. (2013) LFE rheology, Beeler et al.
+(2016) effective stress, Lockner & Beeler (1999) premonitory slip.
+
+### Finding 1 — the event-count requirement was wrong by two orders of magnitude ✓✓
+
+**Previously recorded: 10⁵–10⁶ events. Actual: ~10⁴.**
+
+That figure came from a search summary in the first pass and was never verified
+against the paper. The paper itself, equation 18:
+
+```
+N ≥ ln(P_rw) / ( Δτ_u / (2 a σ_n) )²
+```
+
+**N scales as the inverse square of normalised stress amplitude.** Worked examples
+from the paper:
+
+| Stress amplitude | Events needed |
+|---|---|
+| Δτ = 0.01 MPa (a = 0.0045, σ_n = 18 MPa/km, 5–15 km) | **6.2 × 10³ – 5.5 × 10⁴** |
+| Δτ = 0.1 MPa (10× larger) | **60 – 541** |
+
+And from the abstract: daily Earth tides require **">13,000 earthquakes to
+detect."**
+
+**Consequence — the project is far more feasible than doc 01 recorded.** USGS
+ComCat holds millions of events; 13,000 is trivially available, and many *regional*
+subsets clear the bar comfortably. We are not power-limited at the global scale,
+and the doc 04 §7 power analysis should be re-run with the correct law. The
+"hard requirement" framing for the full catalogue pull stands, but for coverage and
+confounder control rather than raw statistical power.
+
+**Doc 01 corrected.**
+
+### Finding 2 — the second timescale, and a startling band prediction ★★
+
+Beeler & Lockner identify the **nucleation duration t_n**, distinct from Dieterich's
+t_a. Their result:
+
+> Fault strength's second-order dependence on sliding rate "determines the duration
+> of nucleation and **damps the response to stress change at frequencies greater
+> than 1/t_n**."
+
+And, critically:
+
+> "The experiments suggest that the **minimum typical duration of earthquake
+> nucleation on the San Andreas fault system is 1 year.**"
+
+This is the missing short-period cutoff — the second timescale the band-pass
+reconstruction required (third pass). Combining with Ader's critical period:
+
+```
+responsive band:    t_n  <  T  <  T_a
+                   ~1 yr  <  T  <  ~20–200 yr        (ordinary crust)
+```
+
+**Everything faster than about a year is damped by nucleation. Everything slower
+than T_a rolls off.**
+
+If this holds, the implications are severe and specific:
+
+| Constituent | Period | Predicted |
+|---|---|---|
+| Semidiurnal (M2, S2, N2) | 12–12.4 h | **damped** |
+| Diurnal (O1, K1, P1) | 24–26 h | **damped** |
+| Fortnightly, monthly (Mf, Mm) | 13.7–27.6 d | **damped** |
+| Semiannual (Ssa) | 182.6 d | marginal |
+| **Annual (Sa)** | 365.26 d | **at the band edge** |
+| **Lunar nodal** | 18.61 yr | **inside the band** |
+| **LOD / decadal** | decades | **inside the band** |
+
+**This is the strongest theoretical result the project has found.** It says the
+responsive band for ordinary earthquakes is *years to decades* — orbital and
+long-period timescales — and that the short-period tidal constituents everyone
+studies are the ones physics predicts should NOT work.
+
+It independently explains: why semidiurnal tidal correlation is weak everywhere;
+why annual/monsoon signals correlate (Ader's Himalayan motivation); why Bendick &
+Bilham's decadal LOD correlation is not absurd; and why tremor — with t_n and T_a
+both far shorter — responds at tidal periods while earthquakes do not.
+
+**It also justifies the project's long-period focus on physical grounds.** Not
+because long cycles are meaningful, but because the fault itself low-passes
+everything faster than a year.
+
+⚠ **Caveat.** t_n ≥ 1 yr is an *extrapolation from laboratory experiments to the
+San Andreas*, not a field measurement. It is the paper's own inference and should
+be carried as a hypothesis with a large uncertainty, not a constant. But it is
+published, mechanistic, and testable — precisely by measuring the response spectrum
+(hypothesis 12).
+
+### Finding 3 — HW95 already contains the planetary expansion ✗
+
+**Doc 02's central novelty claim was wrong.**
+
+The **HW95 catalogue** (Hartmann & Wenzel 1995, *GRL* 22) is a harmonic development
+of the tide-generating potential containing **12,935 waves, of which 1,483 are due
+to direct planetary effects** — Venus, Jupiter, Mars, Mercury, Saturn. Based on
+DE200, spanning 1850–2150. Scope: Moon to degree 6, Sun to degree 3, planets to
+degree 2.
+
+So the "generalised Doodson expansion including planetary arguments" that doc 02
+proposed as our novel contribution **was published in 1995.**
+
+**This is a gift, not a setback.** We do not have to derive it — 1,483
+rigorously-computed planetary tidal waves with correct amplitudes, produced by
+geodesists, are exactly the multi-body harmonic feature basis the project wants.
+Using an authoritative published basis is a far stronger position than deriving our
+own.
+
+**Corrected novelty claim.** Not the expansion. Rather:
+1. Using HW95/KSM03 planetary waves as an **ML feature basis tested against
+   seismicity** — not done
+2. **Broadband response spectroscopy** across six decades (hypothesis 12)
+3. A **global β field** — published work is single-fault
+4. The **moonquake → tremor → earthquake validation ladder**
+
+**Doc 02 corrected.**
+
+### Finding 4 — the modern successor catalogue, and it is in our band
+
+**Kudryavtsev & Cionco (2025)**, *New and updated long-periodic terms in harmonic
+development of the Earth tide-generating potential*, arXiv:2508.18111, accepted in
+*Geodesy and Geodynamics*. **Free on arXiv.**
+
+- **38 terms with period longer than ~18 years**, amplitude ≥ 10⁻⁸ m²s⁻²
+- A relatively large term at **~7.4 kyr**
+- **Several NEW waves near the 18.61-year lunar nodal period**
+- Built on **DE441**, planetary terms included, 30,000+ year spectral analysis
+- Updates the **KSM03** expansion (Kudryavtsev 2004)
+- Released in both **HW95 and KSM03 format**
+
+This lands exactly in the band Finding 2 predicts is responsive. New waves near
+18.61 yr are directly relevant. Highest-priority acquisition.
+
+### Finding 5 — LFE effective stress is kilopascal-scale
+
+Beeler et al. (2013), *Inferring fault rheology from low-frequency earthquakes on
+the San Andreas*: observed tidal modulation "restricts ambient stress to be at most
+a **few kilopascal**."
+
+A few kPa = 10⁻³ MPa, consistent with Thomas et al.'s Aσ₀ = 6×10⁻⁴ MPa for
+Parkfield tremor. Confirms the low-effective-stress mechanism for LFE/tremor tidal
+sensitivity and supports tremor as the high-SNR testbed.
+
+### Catalogue access status
+
+**ETERNA 3.30** bundles seven tidal potential catalogues — Doodson (1921),
+Cartwright et al. (1971, 1973), Büllesfeld (1985), Tamura (1987), Xi (1989),
+Roosbeek (1996), Hartmann & Wenzel (1995). HW95 gives better than 1 nGal accuracy.
+
+⚠ ETERNA 3.30 was distributed on CD-ROM for US$300 in 1997. **Modern free access
+route not yet established.** Options to try next pass: ETERNA 3.4 / ETERNA-x
+redistributions, IGETS / ICET (International Center for Earth Tides), PyETERNA and
+other open reimplementations, and the KSM03/HW95-format catalogue released with
+Kudryavtsev & Cionco (2025) — which may be the cleanest free path.
+
+**RATGP95** (Roosbeek 1996) has a free PDF at Oxford Academic.
+
+### Open
+
+- ETERNA / HW95 catalogue data files — free source not yet found
+- Kudryavtsev & Cionco (2025) catalogue data
+- Ader PhD thesis (Caltech THESIS, open) — likely fuller derivations

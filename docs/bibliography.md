@@ -162,6 +162,58 @@ doc 09 §7.*
 
 ---
 
+## Tidal potential catalogues
+
+**Hartmann, T. & Wenzel, H.-G. (1995).** The HW95 tidal potential catalogue. *GRL*
+22(24), 3553–3556. — Tier A. **12,935 waves, 1,483 of them direct planetary
+effects** (Venus, Jupiter, Mars, Mercury, Saturn). Moon to degree 6, Sun to degree
+3, planets to degree 2. DE200, 1850–2150.
+https://agupubs.onlinelibrary.wiley.com/doi/10.1029/95GL03324
+
+**Kudryavtsev, S.M. & Cionco, R.G. (2025).** New and updated long-periodic terms in
+harmonic development of the Earth tide-generating potential. *Geodesy and
+Geodynamics* (accepted). arXiv:2508.18111 — **free**. Tier A. 38 terms with period
+> ~18 yr; new waves near the 18.61 yr nodal period; DE441; HW95 and KSM03 formats.
+**Directly in our predicted responsive band — highest-priority acquisition.**
+https://arxiv.org/pdf/2508.18111
+
+**Roosbeek, F. (1996).** RATGP95: a harmonic development of the tide-generating
+potential. *GJI* 126(1), 197. — Free PDF.
+https://academic.oup.com/gji/article-pdf/126/1/197/6045570/126-1-197.pdf
+
+**ETERNA 3.30** — bundles seven catalogues: Doodson (1921), Cartwright et al.
+(1971, 1973), Büllesfeld (1985), Tamura (1987), Xi (1989), Roosbeek (1996),
+Hartmann & Wenzel (1995). ⚠ CD-ROM, US$300 as of 1997; free route not yet found.
+https://www.eas.slu.edu/GGP/ETERNA34/MANUAL/ETERNA33.HTM
+
+---
+
+## USGS public domain — all free
+
+USGS-authored work is public domain. Rock Physics Lab publications page:
+https://earthquake.usgs.gov/research/eqproc/rockphysics/pubs.php
+
+**Beeler, N.M. & Lockner, D.A. (2003).** Why earthquakes correlate weakly with the
+solid Earth tides. *JGR* 108(B8), 2391. — **Obtained.** Equation 18:
+`N ≥ ln(P_rw)/(Δτ_u/(2aσ_n))²`. Nucleation duration **t_n ≥ 1 yr** for the San
+Andreas; response damped above 1/t_n.
+https://earthquake.usgs.gov/static/lfs/research/rockphysics/nmb_2001JB001518.pdf
+
+**Beeler, N.M. et al. (2013).** Inferring fault rheology from low-frequency
+earthquakes on the San Andreas. — **Obtained.** Tidal modulation restricts ambient
+stress to at most **a few kilopascal**.
+https://earthquake.usgs.gov/static/lfs/research/rockphysics/Beeler-Inferring-fault-rheology-from-low-frequency-2013.pdf
+
+**Beeler, N.M. et al. (2016).** Effective stress, friction, and deep crustal
+faulting. — **Obtained.**
+https://earthquake.usgs.gov/static/lfs/research/rockphysics/Beeler-et-al-2016b.pdf
+
+**Lockner, D.A. & Beeler, N.M. (1999).** Premonitory slip and tidal triggering of
+earthquakes. — **Obtained.**
+https://earthquake.usgs.gov/static/lfs/research/rockphysics/LocknerTdlTrigJGR99.pdf
+
+---
+
 ## Reference works to obtain
 
 - **IERS Conventions (2010), Ch. 7** — solid Earth tide, Love numbers,
