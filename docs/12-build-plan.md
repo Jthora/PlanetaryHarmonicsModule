@@ -107,6 +107,24 @@ perigee–apogee and nodal-envelope amplitude tests.
 
 ---
 
+## Finish before the Phase 3 split
+
+Two physics pieces belong in `ph-core`, not in EarthquakeForecastModule, and
+building them here means the forecasting repo starts with a complete feature layer
+rather than a half-built one:
+
+1. **Ephemeris-based tidal phase.** Compute phase from real Earth–Moon–Sun geometry
+   rather than folding on trial periods. Required by the time-shift null, which is
+   degenerate against a single exact frequency (see `ph-core::stats`). Needs the
+   lunar kernels.
+2. **Coulomb projection.** `ΔCFS = Δτ + μ′Δσₙ` and `dΔCFS/dt` from the tidal tensor
+   and fault geometry (strike/dip/rake). This is physics, it is shared, and
+   forecasting needs it on day one.
+
+Also plan **`pyo3`/`maturin` bindings** — needed by Layer 2's own transfer-function
+ML regardless of any split (`docs/13-ml-stack.md` §2c), and the natural interface
+for a Python forecasting stack.
+
 ## Riding-along research task
 
 Doc 09 §10 still lists the Apollo PSE catalogue as "to characterise": event
