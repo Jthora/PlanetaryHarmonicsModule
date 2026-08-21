@@ -27,6 +27,7 @@ interpretive mappings live upstream in `AstrologyCore`.
 | [13-ml-stack.md](13-ml-stack.md) | Layered ML stack, capability ladders, what earns a model |
 | [14-repo-architecture.md](14-repo-architecture.md) | Where forecasting lives; the chain forks here |
 | [15-earthquake-forecast-handoff.md](15-earthquake-forecast-handoff.md) | **Copy to the new repo as `HANDOFF.md`** — self-contained |
+| [16-plan.md](16-plan.md) | **Working plan** — tracks, dependencies, decision points |
 | [bibliography.md](bibliography.md) | Full citations, tiered |
 
 ## Dependency chain
