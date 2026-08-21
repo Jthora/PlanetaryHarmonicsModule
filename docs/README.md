@@ -23,6 +23,8 @@ interpretive mappings live upstream in `AstrologyCore`.
 | [09-deep-dive-agenda.md](09-deep-dive-agenda.md) | Equations and methods to derive next |
 | [10-rustspice-requirements.md](10-rustspice-requirements.md) | Data and API spec for the RustSPICE layer |
 | [11-osint-access.md](11-osint-access.md) | Free literature access routes; no institutional credentials |
+| [12-build-plan.md](12-build-plan.md) | Decision to build; phased scope |
+| [13-ml-stack.md](13-ml-stack.md) | Layered ML stack, capability ladders, what earns a model |
 | [bibliography.md](bibliography.md) | Full citations, tiered |
 
 ## Dependency chain
@@ -36,7 +38,8 @@ RustSPICE  (modules/RustSPICE)   ephemeris + time + coordinate frames
 
 ## Status
 
-Early research phase. No implementation committed yet. Literature base and
+**Building.** `crates/ph-core` scaffolded; Phase 1 is deep moonquake validation
+(see [12-build-plan.md](12-build-plan.md)). Literature base and
 methodology design first, code second.
 
 **Current strategic goal** (see [08-hypotheses.md](08-hypotheses.md)): convert the
