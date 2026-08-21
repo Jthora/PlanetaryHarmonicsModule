@@ -18,6 +18,10 @@ interpretive mappings live upstream in `AstrologyCore`.
 | [04-ml-architecture.md](04-ml-architecture.md) | Point-process modelling, ETAS residual design, validation |
 | [05-research-frontier.md](05-research-frontier.md) | Under-explored options and validation datasets |
 | [06-engine-architecture.md](06-engine-architecture.md) | Rust/WASM design, RustSPICE integration |
+| [07-research-log.md](07-research-log.md) | Dated log of literature passes and decisions |
+| [08-hypotheses.md](08-hypotheses.md) | Generated research hypotheses, prioritised |
+| [09-deep-dive-agenda.md](09-deep-dive-agenda.md) | Equations and methods to derive next |
+| [bibliography.md](bibliography.md) | Full citations, tiered |
 
 ## Dependency chain
 
@@ -32,3 +36,12 @@ RustSPICE  (modules/RustSPICE)   ephemeris + time + coordinate frames
 
 Early research phase. No implementation committed yet. Literature base and
 methodology design first, code second.
+
+**Current strategic goal** (see [08-hypotheses.md](08-hypotheses.md)): convert the
+multi-basis harmonic framework from a correlation search into a physically
+grounded inverse problem with analytic significance testing. Critical path is
+items 1, 6 and 2 of [09-deep-dive-agenda.md](09-deep-dive-agenda.md).
+
+**Validation ladder** (see [05-research-frontier.md](05-research-frontier.md)):
+deep moonquakes (tidal forcing dominant) → tectonic tremor (effect strong) →
+earthquakes (effect small). Known-answer tests before the hard problem.
