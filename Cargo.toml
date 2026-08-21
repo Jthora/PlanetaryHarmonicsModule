@@ -1,0 +1,22 @@
+[workspace]
+resolver = "2"
+members = ["crates/ph-core"]
+# RustSPICE is a submodule with its own workspace root. Without this, Cargo walks
+# up from its crates and tries to inherit workspace deps from *this* manifest.
+exclude = ["modules/RustSPICE"]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2021"
+license = "MIT OR Apache-2.0"
+repository = "https://github.com/Jthora/PlanetaryHarmonicsModule"
+
+[workspace.dependencies]
+# Consumed as a Rust library, not through WASM. RustSPICE composes as a normal
+# dependency; WASM lives only at the leaf of the chain. See docs/10.
+rustspice-core = { path = "modules/RustSPICE/crates/rustspice-core" }
+
+[profile.release]
+opt-level = 3
+lto = true
+codegen-units = 1

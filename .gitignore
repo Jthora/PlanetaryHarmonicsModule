@@ -1,0 +1,13 @@
+# Rust build artifacts
+/target/
+**/target/
+
+# Ephemeris kernels — large binaries, fetched not committed
+/kernels/*.bsp
+/kernels/*.bpc
+
+# Data — catalogues and models are downloaded, not versioned
+/data/
+
+# macOS
+.DS_Store
