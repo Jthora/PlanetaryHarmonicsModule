@@ -25,6 +25,7 @@ interpretive mappings live upstream in `AstrologyCore`.
 | [11-osint-access.md](11-osint-access.md) | Free literature access routes; no institutional credentials |
 | [12-build-plan.md](12-build-plan.md) | Decision to build; phased scope |
 | [13-ml-stack.md](13-ml-stack.md) | Layered ML stack, capability ladders, what earns a model |
+| [14-repo-architecture.md](14-repo-architecture.md) | Where forecasting lives; the chain forks here |
 | [bibliography.md](bibliography.md) | Full citations, tiered |
 
 ## Dependency chain
