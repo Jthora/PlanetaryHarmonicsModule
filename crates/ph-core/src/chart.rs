@@ -338,8 +338,11 @@ mod tests {
                 .collect(),
         };
         assert_eq!(c.longitudes().len(), BODIES.len());
-        assert!((c.body("MOON").unwrap().lon - 0.1).abs() < 1e-12);
-        assert!((c.declinations()[2] - 0.02).abs() < 1e-12);
+        // Look the index up rather than hard-coding it, so the assertion survives
+        // reordering BODIES -- adding Earth broke the hard-coded version.
+        let moon = BODIES.iter().position(|b| *b == "MOON").unwrap();
+        assert!((c.body("MOON").unwrap().lon - moon as f64 * 0.1).abs() < 1e-12);
+        assert!((c.declinations()[moon] - moon as f64 * 0.01).abs() < 1e-12);
         assert!(c.body("NOT A BODY").is_none());
     }
 
