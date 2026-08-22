@@ -122,6 +122,36 @@ impl Forcing {
         (out, dropped)
     }
 
+    /// Peak-to-trough amplitude of the forcing cycle containing `t`.
+    ///
+    /// The cycle is the interval between the maxima bracketing `t`, and the
+    /// amplitude is the largest minus the smallest sampled value within it.
+    ///
+    /// This is the handle for testing the **amplitude law** `R̃/r = Δτ/(aσ̄)`:
+    /// a detection artifact does not care how strong the tide is, so any
+    /// dependence of response on cycle amplitude is physical rather than
+    /// instrumental.
+    pub fn cycle_amplitude_at(&self, t: f64) -> Option<f64> {
+        let m = &self.maxima;
+        if m.len() < 2 || t < m[0] || t > m[m.len() - 1] {
+            return None;
+        }
+        let i = match m.binary_search_by(|p| p.partial_cmp(&t).unwrap()) {
+            Ok(i) => i.min(m.len() - 2),
+            Err(i) => i - 1,
+        };
+        let (lo, hi) = (m[i], m[i + 1]);
+        let a = self.times.partition_point(|&x| x < lo);
+        let b = self.times.partition_point(|&x| x <= hi);
+        if b <= a {
+            return None;
+        }
+        let slice = &self.values[a..b];
+        let mx = slice.iter().cloned().fold(f64::MIN, f64::max);
+        let mn = slice.iter().cloned().fold(f64::MAX, f64::min);
+        Some(mx - mn)
+    }
+
     /// Sampled times.
     pub fn times(&self) -> &[f64] {
         &self.times
@@ -201,6 +231,36 @@ mod tests {
             let p = f.phase_at(t).unwrap();
             assert!(p < 1e-6 || (TAU - p) < 1e-6, "phase {p} at a maximum");
         }
+    }
+
+    #[test]
+    fn cycle_amplitude_tracks_a_modulated_envelope() {
+        // Carrier of period 10 with a slow envelope: amplitude must vary with it.
+        let f = sample(
+            |t| (1.0 + 0.9 * (TAU * t / 1000.0).sin()) * (TAU * t / 10.0).sin(),
+            40_000,
+            0.05,
+        );
+        let m = f.maxima();
+        let amps: Vec<f64> = m
+            .iter()
+            .skip(1)
+            .take(m.len() - 2)
+            .filter_map(|&t| f.cycle_amplitude_at(t + 0.1))
+            .collect();
+        let (lo, hi) = amps
+            .iter()
+            .fold((f64::MAX, f64::MIN), |(l, h), &x| (l.min(x), h.max(x)));
+        // Envelope runs 0.1 to 1.9, so peak-to-trough spans roughly 0.2 to 3.8.
+        assert!(lo < 0.6, "min amplitude {lo}");
+        assert!(hi > 3.0, "max amplitude {hi}");
+    }
+
+    #[test]
+    fn cycle_amplitude_is_none_outside_the_span() {
+        let f = sample(|t| (TAU * t / 10.0).sin(), 10_000, 0.05);
+        assert!(f.cycle_amplitude_at(-100.0).is_none());
+        assert!(f.cycle_amplitude_at(1e9).is_none());
     }
 
     #[test]

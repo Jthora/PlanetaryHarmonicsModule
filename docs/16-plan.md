@@ -97,7 +97,7 @@ B1 is needed by Layer 2's own ML regardless of any split
 | ~~C2~~ | **Done.** ΔCFS on SAF geometry, whole-day-shift null fixed in advance. **9/12 families survive BH-FDR**; phases coherent within 71°. First result to survive correction | ✓ |
 | **C2c** | Full exponential `R₀exp(S_T/Aσ₀)` with M > 1 — amplitude modelling, not timing | C2 |
 | **C2b** | Alias analysis — blacklist beats against the 24 h detection cycle | C1 |
-| **C3** | Measure the response spectrum where the effect is strong | C2 |
+| ~~C3~~ | **Done.** Amplitude law: `D²/N` rises 71× over a 3× amplitude range, log-log slope **3.56** vs 2 for linear. Trend survives its own re-binned null (p = 0.005, null median 0.66). Steeper than linear → non-linear exponential regime | ✓ |
 
 ## Track D — Test the band prediction
 

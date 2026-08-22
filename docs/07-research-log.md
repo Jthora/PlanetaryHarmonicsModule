@@ -1017,3 +1017,99 @@ pre-specified null and returned a result that survives correction.**
 That is the methodological milestone the validation ladder existed to reach: not
 "we found a correlation," but "we found one *after* three separate opportunities to
 fool ourselves, using a null fixed in advance."
+
+---
+
+## 2026-08-22 — C3: the amplitude law, and a fourth trap
+
+**Code:** `ph_core::phase::cycle_amplitude_at`, `examples/parkfield_amplitude_law.rs`.
+50 tests.
+
+### Why amplitude rather than constituent
+
+D1 showed the diurnal and semidiurnal bands are dominated by a detection artifact
+locked to solar time, so a constituent-by-constituent spectrum runs straight back
+into it.
+
+But **the artifact does not care how strong the tide is.** Binning events by the
+peak-to-trough amplitude of the ΔCFS cycle they fall in gives a test that detection
+bias cannot produce, because it is amplitude-independent by construction.
+
+This is a direct test of the amplitude law `R̃/r = Δτ/(aσ̄)` (Ader et al. 2014, eq.
+B7). Predictions fixed before the run: flat → artifact; `D²/N ∝ amplitude²` →
+linear response; steeper → the non-linear exponential regime.
+
+### Result
+
+All 1,528,117 events, six equal-count amplitude bins:
+
+| Bin | Events | Amplitude (rel.) | `D²/N` | ratio to bin 1 |
+|---|---|---|---|---|
+| 1 | 254,686 | 1.00 | 216 | 1.00 |
+| 2 | 254,686 | 1.48 | 2,301 | 10.67 |
+| 3 | 254,686 | 1.85 | 3,513 | 16.30 |
+| 4 | 254,686 | 2.20 | 3,883 | 18.01 |
+| 5 | 254,686 | 2.53 | 7,639 | 35.44 |
+| 6 | 254,687 | 3.00 | 15,288 | 70.91 |
+
+**Monotonic across every bin. A 3× amplitude range produces a 71× change in phase
+concentration.** Log-log slope **3.56**, against 2 for a linear response.
+
+### The fourth trap — per-bin nulls are compromised
+
+Bin 6 has the **highest** `D²/N` (15,288) and yet **p = 0.45**.
+
+That is the tell. **Binning by amplitude selects on the forcing itself**, and
+high-amplitude cycles recur at the ~14.77 d spring–neap period, so every bin
+inherits temporal structure derived from the very signal under test. A whole-day
+shift does not preserve that structure, so the per-bin null answers a different
+question — again.
+
+**The per-bin p-values in the table above are not trustworthy and should not be
+quoted.**
+
+### Nulling the claim actually being made
+
+The claim is the *trend*, so the trend is what must be nulled: shift the event
+times, **re-bin at the shifted times**, refit the slope.
+
+```text
+observed slope 3.56    null median 0.66    null max 3.53    p = 0.0050
+```
+
+**The trend survives.** Null slopes centre near 0.66 — no trend, as expected when
+alignment is broken — while the observed 3.56 exceeds all 200 draws.
+
+⚠ **But only just.** Null max 3.53 against observed 3.56 is a thin margin, and
+p = 0.0050 is the 200-trial floor rather than a measurement. The true value is
+plausibly somewhat higher. More trials would sharpen it; the null slope
+distribution has a heavy tail and deserves more sampling before this is published.
+
+### Reading
+
+Response scales with tidal forcing amplitude, **faster than linearly**. That is
+consistent with the exponential form `R = R₀exp(S_T/Aσ₀)` being in its non-linear
+regime — which is exactly what Thomas et al. (2012) imply for Parkfield with
+`Aσ₀ = 6×10⁻⁴ MPa`, giving `S_T/Aσ₀ ≈ 0.2–2`.
+
+Two independent lines now agree that Parkfield LFEs respond to tidal Coulomb
+stress: C2's phase clustering (9/12 families surviving FDR) and C3's amplitude
+scaling. They rest on different statistics and different nulls.
+
+### Trap count: four
+
+1. Pooled-phase null degenerate when catalogue shares the forcing's period
+2. Uniform-time null tests temporal clustering, not tidal alignment
+3. Raw period folding measures the detector
+4. **Per-bin nulls compromised when the binning variable derives from the forcing**
+
+All four share one shape: *a statistic that looks decisive while silently answering
+a different question.* Each was caught only because the result was checked against
+what the null was actually testing, rather than against intuition.
+
+### Still untested
+
+**The band prediction.** Every result so far sits at M2 (12.42 h) — deep inside the
+range doc 07 predicts should be *damped* for ordinary crust. Parkfield works
+because tremor's `T_a` sits in the tidal band. The 1 yr–200 yr claim for ordinary
+crust remains untouched, and needs a terrestrial earthquake catalogue (Phase 3).
