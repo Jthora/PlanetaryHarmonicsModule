@@ -104,7 +104,7 @@ B1 is needed by Layer 2's own ML regardless of any split
 | # | Task | Depends on |
 |---|---|---|
 | **D1** | M2-vs-S2 and alias-analysis validity gates | A3 |
-| **D2** | Free HW95/KSM03 catalogue data (Kudryavtsev & Cionco 2025, arXiv:2508.18111, ships in HW95 format) | — |
+| **D2** | Free HW95/KSM03 catalogue data (Kudryavtsev & Cionco 2025, arXiv:2508.18111, ships in HW95 format) | **Now a prerequisite for C4** — analytic constituent arguments are the only phase definition whose null behaves |
 | **D3** | Broadband response spectrum — tides, hydrological, pole tide, LOD in one fit | C3, D2 |
 
 **D3 is the project's central question.** Everything before it is instrument-building.
@@ -198,9 +198,9 @@ quantitatively. **F2 is no longer a parallel nicety; it is on the critical path.
 
 | # | Task | Why now |
 |---|---|---|
-| **C3b** | Raise C3's null to 2,000 trials | p = 0.0050 is the 200-trial *floor*, and null max 3.53 against observed 3.56 is a thin margin. This is a result we would publish; it should not rest on a floor. Cheap. |
+| ~~C3b~~ | **Done.** 2,000 trials: slope 3.56, null median 0.43, null max 4.09, **p = 0.0095**. Survives, but weaker than the floor suggested | ✓ |
 | **C2b** | Alias analysis — enumerate catalogue periodicities, compute beats against the constituent list, blacklist collisions | Outstanding validity gate. The 24 h detection cycle is strong enough (S1 power 16,245) that its beats will contaminate elsewhere. |
-| **C4** | **Frequency-resolved response at Parkfield** — band-pass ΔCFS per constituent, measure response in each band where the null is valid | **The first actual transfer function.** Exclude K1/S1 (degenerate with the diurnal artifact); M2, O1, Mf, Msf, Mm, Ssa, Sa are usable. |
+| **C4** | ⚠ **Attempted and failed.** Deriving constituent phase by demodulating the composite ΔCFS makes each band a near-pure tone, which kills the time-shift null (trap 5), and sham frequencies return the leaking constituent's phase rather than a neutral baseline (trap 6). **Redo using analytic Doodson arguments — blocked on D2.** |
 
 C4 is the scientific centre of gravity here. It converts "LFEs respond to tides"
 into "LFEs respond *like this* as a function of frequency", which is the object the

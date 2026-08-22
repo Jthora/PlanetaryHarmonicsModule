@@ -1113,3 +1113,102 @@ what the null was actually testing, rather than against intuition.
 range doc 07 predicts should be *damped* for ordinary crust. Parkfield works
 because tremor's `T_a` sits in the tidal band. The 1 yr–200 yr claim for ordinary
 crust remains untouched, and needs a terrestrial earthquake catalogue (Phase 3).
+
+---
+
+## 2026-08-22 — C3b confirms; C4 fails, and the failure is instructive
+
+### C3b — the amplitude law holds at 2,000 trials
+
+```text
+observed slope 3.56   null median 0.43   null max 4.09   p = 0.0095
+```
+
+Against the 200-trial run (p = 0.0050, null max 3.53). As flagged, **that p was a
+floor, not a measurement** — with ten times the sampling, 18 of 2,000 null draws
+now exceed the observed slope and the null maximum overtakes it.
+
+**The result survives at p ≈ 0.01** rather than 0.005. Weaker than it first looked,
+still significant, and now properly estimated. The prediction that the floor was
+hiding the true value was correct.
+
+Also required an optimisation worth noting: sorting 1.5M events per trial would
+have dominated runtime, so amplitude bin edges are now fixed once from the observed
+distribution and reused. Binning is O(n) and — more importantly — **identical
+between observed and null**, which is what a like-for-like comparison needs.
+
+### C4 — frequency-resolved response: method failed
+
+Built `ph_core::demod` (complex demodulation, 5 tests, verified to separate M2 from
+a 4× larger S2 when the window exceeds their 14.77 d beat). Then attempted response
+per constituent at Parkfield.
+
+**Two nulls tried, both invalid.**
+
+**Trap 5 — the time-shift null, recurring.** Demodulation isolates one constituent,
+which makes the band a **near-pure tone** — and against a pure tone a time shift
+merely *rotates* the phase cluster without diluting it. `D²` is near-invariant and
+the null has no power.
+
+This is trap 1 exactly. `ph_core::stats` documents it in a module-level warning.
+**The demodulation step recreated the degenerate case, and I walked into it
+anyway.** Worth recording plainly: documenting a trap is not the same as being
+immune to it, because the trap reappears wearing different clothes.
+
+**Trap 6 — the sham-frequency null.** Replacing it with "run the same procedure at
+frequencies carrying no tide" seemed sound. The result:
+
+```text
+sham floor (10 quiet bands):  median D²/N = 1,439,329   max 1,520,587
+M2:  17,986      O1: 8,357      Mf: 4,195      Sa: 1,488,398
+```
+
+With N = 1,528,117, a sham median of 1.44M means **D² ≈ N²** — events land at
+essentially *one* phase at frequencies where there is no tide. Every real
+constituent sits **below** the floor.
+
+The diagnosis: at a frequency with no genuine power, `z̄` is dominated by whatever
+leaks in from the nearest strong constituent at ω′. Then `z̄ ∝ e^{i(ω′−ω)t}`, so
+`arg z̄ = (ω′−ω)t`, and the reported band phase `ωt + arg z̄` collapses to `ω′t` —
+**the phase of the leaking constituent, not of the target.** A tide-free frequency
+does not give a neutral baseline; it gives a relabelled copy of the dominant band.
+
+### What C4 needs instead
+
+**Do not derive constituent phase by demodulating the composite ΔCFS series.**
+Compute it from the **astronomical argument** — the exact Doodson combination of
+fundamental arguments for that constituent. That phase is uniform over long spans
+by construction, so events uniform in time are uniform in phase, and both the
+statistic and its null behave.
+
+This is what the tidal literature does, and it is why the field works in terms of
+constituent arguments rather than filtered series.
+
+**It also makes D2 a blocker.** Analytic constituent arguments mean the HW95/KSM03
+expansion, which doc 07's fourth pass left as "free access not yet established."
+D2 moves from parallel task to **prerequisite for C4**.
+
+### Status
+
+- **C4 is not done.** No frequency-resolved response exists yet, and no transfer
+  function. The numbers above are artifacts and must not be quoted.
+- `ph_core::demod` is correct and tested for what it does — isolating a constituent
+  from a series. The error was using its *phase output* as a statistic against a
+  null, not the demodulation itself. It stays.
+- **C2 and C3 are unaffected.** Both used the full composite ΔCFS, which is
+  genuinely quasi-periodic, so their nulls retain power. C3b independently
+  confirmed at 2,000 trials.
+
+### Trap count: six
+
+1. Pooled-phase null degenerate when catalogue shares the forcing's period
+2. Uniform-time null tests temporal clustering, not tidal alignment
+3. Raw period folding measures the detector
+4. Per-bin nulls compromised when the binning variable derives from the forcing
+5. **Time-shift null degenerate against a demodulated single constituent** — trap 1
+   recurring, walked into despite being documented
+6. **Sham-frequency null invalid**: demodulating where there is no tide returns the
+   leaking constituent's phase, not a neutral baseline
+
+Six for six, all the same shape: *a statistic that looks decisive while silently
+answering a different question.*

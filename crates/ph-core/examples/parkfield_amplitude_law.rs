@@ -37,7 +37,7 @@ const SAF: fault::FaultPlane = fault::FaultPlane {
 const MU: f64 = 0.4;
 const STEP_DAYS: f64 = 0.02;
 const BINS: usize = 6;
-const NULL_TRIALS: usize = 200;
+const NULL_TRIALS: usize = 2000;
 
 struct Rng(u64);
 impl Rng {
@@ -171,23 +171,38 @@ fn main() -> rustspice_core::Result<()> {
     // The claim is the TREND, so the trend is what must be nulled: shift the
     // event times, RE-BIN at the shifted times, and refit the slope.
     println!("\nnulling the trend itself (re-binning at shifted times):");
+    // Fixed amplitude thresholds, taken once from the observed distribution and
+    // reused for every null trial. Sorting 1.5M events per trial would dominate
+    // runtime; fixed edges make binning O(n) and keep the binning identical
+    // between observed and null, which is what a like-for-like comparison needs.
+    let edges: Vec<f64> = (1..BINS)
+        .map(|b| paired[b * paired.len() / BINS].0)
+        .collect();
+    let bin_of = |a: f64| edges.partition_point(|&e| e <= a);
+
     let slope_of = |ts: &[f64]| -> Option<f64> {
-        let mut pr: Vec<(f64, f64)> = ts
-            .iter()
-            .filter_map(|&t| forcing.cycle_amplitude_at(t).map(|a| (a, t)))
-            .collect();
-        if pr.len() < BINS * 100 {
+        let mut sum = vec![0.0f64; BINS];
+        let mut cnt = vec![0usize; BINS];
+        let mut re = vec![0.0f64; BINS];
+        let mut im = vec![0.0f64; BINS];
+        for &t in ts {
+            let (Some(a), Some(ph)) = (forcing.cycle_amplitude_at(t), forcing.phase_at(t)) else {
+                continue;
+            };
+            let b = bin_of(a).min(BINS - 1);
+            sum[b] += a;
+            cnt[b] += 1;
+            let (s, c) = ph.sin_cos();
+            re[b] += c;
+            im[b] += s;
+        }
+        if cnt.iter().any(|&c| c < 100) {
             return None;
         }
-        pr.sort_by(|a, b| a.0.partial_cmp(&b.0).unwrap());
-        let per = pr.len() / BINS;
         let rows: Vec<(f64, f64)> = (0..BINS)
             .map(|b| {
-                let sl = &pr[b * per..if b + 1 == BINS { pr.len() } else { (b + 1) * per }];
-                let ma = sl.iter().map(|(a, _)| a).sum::<f64>() / sl.len() as f64;
-                let tt: Vec<f64> = sl.iter().map(|(_, t)| *t).collect();
-                let (ph, _) = forcing.phases(&tt);
-                (ma, stats::schuster(&ph, 1)[0].d_squared / ph.len() as f64)
+                let n = cnt[b] as f64;
+                (sum[b] / n, (re[b] * re[b] + im[b] * im[b]) / n)
             })
             .collect();
         let (a0, d0) = rows[0];
