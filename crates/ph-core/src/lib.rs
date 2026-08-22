@@ -19,6 +19,7 @@
 //!
 //! - [`tidal`] — tide-generating potential, the tidal tensor, concentration nodes
 //! - [`harmonics`] — Fourier angular encodings and least-squares decomposition
+//! - [`chart`] — body states in geocentric, heliocentric and barycentric frames
 //! - [`commensurability`] — multi-body angular relationships under d'Alembert
 //! - [`harmonic_model`] — precompute a harmonic ephemeris; O(1) timestream queries
 //! - [`phase`] — tidal phase from a sampled quasi-periodic forcing
@@ -39,6 +40,7 @@
 //! events occur; they do not create them. Any output implying otherwise is a bug.
 
 pub mod catalog;
+pub mod chart;
 pub mod commensurability;
 pub mod demod;
 pub mod doodson;
