@@ -13,6 +13,7 @@
 //! - [`harmonics`] — Fourier angular encodings and least-squares decomposition
 //! - [`stats`] — the generalised Schuster test and time-shifted null distributions
 //! - [`ephemeris`] — batched geometric states, wrapping `rustspice-core`
+//! - [`field`] — tidal fields from real ephemeris geometry
 //! - [`catalog`] — event catalogues
 //! - [`apollo`] — Apollo PSE catalogue ingestion (Phase 1 validation)
 //!
@@ -25,6 +26,7 @@
 pub mod apollo;
 pub mod catalog;
 pub mod ephemeris;
+pub mod field;
 pub mod harmonics;
 pub mod stats;
 pub mod tidal;

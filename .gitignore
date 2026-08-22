@@ -5,6 +5,9 @@
 # Ephemeris kernels — large binaries, fetched not committed
 /kernels/*.bsp
 /kernels/*.bpc
+/kernels/*.tpc
+/kernels/*.tls
+/kernels/*.tf
 
 # Data — catalogues and models are downloaded, not versioned
 /data/
