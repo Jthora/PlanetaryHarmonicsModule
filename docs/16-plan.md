@@ -153,3 +153,114 @@ validity gates (D1).
 4. **Before any Phase 3 work** — pre-commit to what gets published if the answer is
    null: a rigorous upper bound plus the moonquake and tremor validations. Deciding
    now removes the incentive to keep scanning until something crosses p < 0.05.
+
+---
+
+# Revision 2 — 2026-08-22, after Tracks A and C
+
+Tracks A and C are complete. This section supersedes the track tables above.
+
+## Where the project stands
+
+**Two independent positive results at Parkfield**, on different statistics with
+different nulls: C2's phase clustering (9/12 families surviving Benjamini-Hochberg)
+and C3's amplitude law (slope 3.56, trend survives its own re-binned null).
+
+**Four documented traps**, each caught only by checking what the null was actually
+testing. That record is now a deliverable in its own right.
+
+**The band prediction — the project's central question — is untested**, and two
+things block it.
+
+## The two blockers, stated plainly
+
+### 1. Everything sits at one frequency
+
+Every result so far is at **M2, 12.42 h**. A transfer function is a *curve*;
+we have measured one point on it. Worse, M2 sits deep inside the range doc 07
+predicts should be **damped** for ordinary crust — Parkfield works precisely
+because tremor's `T_a` is anomalously short.
+
+We cannot say anything about the 1 yr–200 yr band from a 12.42 h measurement.
+
+### 2. No Love numbers, so `T_a` is unlocatable
+
+`T_a = 2π Aσ₀ / τ̇`. Locating the spectral peak requires `Aσ₀` in real stress
+units. `ph-core::fault` currently emits stress **shape**, not magnitude — the
+elastic response (Love numbers, radial structure) is not applied.
+
+So even a perfect response spectrum could not be compared against the prediction
+quantitatively. **F2 is no longer a parallel nicety; it is on the critical path.**
+
+---
+
+## Immediate — finish Phase 2 honestly
+
+| # | Task | Why now |
+|---|---|---|
+| **C3b** | Raise C3's null to 2,000 trials | p = 0.0050 is the 200-trial *floor*, and null max 3.53 against observed 3.56 is a thin margin. This is a result we would publish; it should not rest on a floor. Cheap. |
+| **C2b** | Alias analysis — enumerate catalogue periodicities, compute beats against the constituent list, blacklist collisions | Outstanding validity gate. The 24 h detection cycle is strong enough (S1 power 16,245) that its beats will contaminate elsewhere. |
+| **C4** | **Frequency-resolved response at Parkfield** — band-pass ΔCFS per constituent, measure response in each band where the null is valid | **The first actual transfer function.** Exclude K1/S1 (degenerate with the diurnal artifact); M2, O1, Mf, Msf, Mm, Ssa, Sa are usable. |
+
+C4 is the scientific centre of gravity here. It converts "LFEs respond to tides"
+into "LFEs respond *like this* as a function of frequency", which is the object the
+whole project is built to measure.
+
+## Next — make the results transferable
+
+| # | Task | Why |
+|---|---|---|
+| **F2** | IERS Conventions Ch. 7 — Love numbers, frequency-dependent corrections | **Now critical path.** Without it `Aσ₀` is unknown and `T_a` cannot be located, so the band prediction is untestable even with a perfect spectrum. |
+| **C5** | Second site — Cascadia tremor (PNSN, `pnsn.org/tremor`) | Every Parkfield result rests on **one location with co-located families**. C2's phase coherence was explicitly a coherence check, not independent confirmation. A second site is the cheapest genuine independence available. |
+
+## Then — Phase 3, which needs the split
+
+| # | Task |
+|---|---|
+| **B1** | `pyo3`/`maturin` bindings on `ph-core` |
+| **B2** | CLI emitting features as CSV/Parquet with provenance |
+| **B3** | Create `EarthquakeForecastModule`, add `HANDOFF.md`, submodule `ph-core` |
+| **P3.1** | USGS ComCat ingestion + magnitude-of-completeness per region and epoch |
+| **P3.2** | GCMT focal mechanisms → fault geometry (fixed, not searched — the Earth case is the *easy* one) |
+| **P3.3** | ETAS baseline, fitted and frozen |
+| **P3.4** | **Response spectrum for ordinary crust** — the band prediction test |
+| **P3.5** | β(x,t) sensitivity field; CSEP evaluation |
+
+**P3.4 is the whole point.** Everything before it is instrument.
+
+---
+
+## Critical path
+
+```
+C3b ─┐
+C2b ─┼─> C4 ──┬─> C5 (independence)
+     │        └─> F2 ──> P3.4  (band prediction, quantitative)
+     │
+     └────────> B1,B2,B3 ──> P3.1,P3.2,P3.3 ──> P3.4
+```
+
+**F2 and C4 are the two things that gate the central question.** Neither is large.
+
+## Decision points
+
+1. **After C4** — if the Parkfield response spectrum is *flat* across usable bands,
+   the transfer-function framing is wrong and doc 08 §12 needs rethinking before
+   Phase 3.
+2. **After C5** — if Cascadia disagrees with Parkfield, the results are
+   site-specific and the generalisation to earthquakes is unsupported.
+3. **After F2** — if `Aσ₀` at Parkfield does not come out near Thomas et al.'s
+   6×10⁻⁴ MPa, the stress pipeline has a scale error and every magnitude-dependent
+   claim needs revisiting.
+4. **Before P3.4** — pre-commit to what publishes if the band prediction fails. The
+   honest answer is that a measured transfer function for ordinary crust is
+   publishable *whatever shape it has*, and saying so now removes the incentive to
+   keep slicing until something crosses p < 0.05.
+
+## Standing rule, earned the hard way
+
+**Specify the null before running, and state what structure it preserves.**
+
+All four traps came from a null chosen after seeing the data. C2 was the first test
+with the null fixed in advance, and it is the first result that survived
+correction. That is not a coincidence.
