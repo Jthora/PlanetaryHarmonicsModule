@@ -43,6 +43,8 @@
 pub mod catalog;
 pub mod chart;
 pub mod chart_features;
+pub mod chart_cycles;
+pub mod chart_local;
 pub mod commensurability;
 pub mod demod;
 pub mod doodson;
