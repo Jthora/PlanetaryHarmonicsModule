@@ -20,6 +20,7 @@
 //! - [`tidal`] — tide-generating potential, the tidal tensor, concentration nodes
 //! - [`harmonics`] — Fourier angular encodings and least-squares decomposition
 //! - [`commensurability`] — multi-body angular relationships under d'Alembert
+//! - [`harmonic_model`] — precompute a harmonic ephemeris; O(1) timestream queries
 //! - [`phase`] — tidal phase from a sampled quasi-periodic forcing
 //! - [`demod`] — complex demodulation; isolating one constituent for R(ω)
 //! - [`doodson`] — analytic constituent phases from the fundamental arguments
@@ -45,6 +46,7 @@ pub mod ephemeris;
 pub mod events;
 pub mod fault;
 pub mod field;
+pub mod harmonic_model;
 pub mod harmonics;
 pub mod love;
 pub mod phase;
