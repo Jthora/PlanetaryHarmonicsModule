@@ -27,7 +27,14 @@
 //! few blocks, and the block count is reported so an underpowered test is visible
 //! rather than silent.
 
-use ph_core::{doodson, parkfield};
+use ph_core::{doodson, fault, field::TidalField, love::Elastic, parkfield};
+use rustspice_core::{Et, KernelSet};
+
+const SAF: fault::FaultPlane = fault::FaultPlane {
+    strike_deg: 137.0,
+    dip_deg: 90.0,
+    rake_deg: 180.0,
+};
 
 const NULL_TRIALS: usize = 400;
 const USABLE: &[&str] = &["M2", "N2", "O1", "Q1", "Mf", "Msf", "Mm", "Ssa", "Sa"];
@@ -50,7 +57,7 @@ fn schuster_power(phases: &[f64]) -> f64 {
     (a * a + b * b) / phases.len() as f64
 }
 
-fn main() {
+fn main() -> rustspice_core::Result<()> {
     let events = parkfield::parse_catalog(
         &std::fs::read_to_string("data/parkfield/LFEcat_Apr2001-Apr2024.csv")
             .expect("run scripts/fetch-parkfield.sh"),
@@ -58,13 +65,44 @@ fn main() {
     let mut times: Vec<f64> = events.iter().map(|e| e.day).collect();
     times.sort_by(|a, b| a.partial_cmp(b).unwrap());
     let (t0, t1) = (times[0], times[times.len() - 1]);
-    println!("{} events, span {:.0} d\n", times.len(), t1 - t0);
+    println!("{} events, span {:.0} d", times.len(), t1 - t0);
+
+    // Constituent AMPLITUDES in our own dCFS, by harmonic regression on the
+    // analytic Doodson phase. This is the right normalisation: not the raw tidal
+    // potential, but the Coulomb stress this fault actually sees at this site.
+    //
+    // Without it a falling D2/N with period cannot be read as a transfer
+    // function, because the tidal potential's own amplitudes fall with period
+    // too. Response per unit stress is the quantity that separates them.
+    let mut ks = KernelSet::new();
+    for k in ["naif0012.tls", "de440s.bsp", "pck00011.tpc", "gm_de440.tpc"] {
+        ks.add_file(format!("kernels/{k}"))?;
+    }
+    let mut spice = ks.open()?;
+    let (lat, lon, _) = parkfield::family_location(
+        &events,
+        &parkfield::families(&events)[0].0,
+    )
+    .unwrap();
+    let step = 0.02;
+    let n = ((t1 - t0) / step) as usize;
+    let epoch2000 = spice.parse_time("2000-01-01T00:00:00")?;
+    let sdays: Vec<f64> = (0..n).map(|i| t0 + i as f64 * step).collect();
+    let epochs: Vec<Et> = sdays.iter().map(|&d| Et(epoch2000.0 + d * 86400.0)).collect();
+    let earth = TidalField::on_earth(&mut spice, "IAU_EARTH")?;
+    let tensors = earth.tensors(&mut spice, &epochs)?;
+    let elastic = Elastic::EARTH;
+    let cfs: Vec<f64> = tensors
+        .iter()
+        .map(|t| elastic.stress(fault::coulomb(&fault::to_local_ned(t, lat, lon), &SAF, 0.4)))
+        .collect();
+    println!("dCFS sampled at {n} points, converted to Pa via Love numbers\n");
 
     println!(
-        "{:<6} {:>9} {:>8} {:>10} {:>11} {:>9} {:>8}",
-        "band", "period", "blocks", "D2/N", "null med", "ratio", "p"
+        "{:<6} {:>9} {:>9} {:>10} {:>9} {:>10} {:>8}",
+        "band", "period", "amp(Pa)", "D2/N", "ratio", "R(w)", "p"
     );
-    println!("{}", "-".repeat(68));
+    println!("{}", "-".repeat(70));
 
     let mut rng = Rng(0x0D00D5);
     let mut results = Vec::new();
@@ -76,6 +114,15 @@ fn main() {
         let n_blocks = ((t1 - t0) / block).floor() as usize;
 
         let observed = schuster_power(&c.phases(&times));
+
+        // Least-squares amplitude of this constituent in the dCFS series.
+        let (mut sa, mut sb) = (0.0f64, 0.0f64);
+        for (k, &d) in sdays.iter().enumerate() {
+            let (si, co) = c.phase_at(d).sin_cos();
+            sa += cfs[k] * co;
+            sb += cfs[k] * si;
+        }
+        let amp = 2.0 * (sa * sa + sb * sb).sqrt() / sdays.len() as f64;
 
         let mut null: Vec<f64> = (0..NULL_TRIALS)
             .map(|_| {
@@ -101,17 +148,19 @@ fn main() {
         // independent randomisations. Raw D2/N is therefore NOT comparable across
         // constituents; the ratio to each band's own null median is.
         let med = null[null.len() / 2];
+        // Fractional rate modulation, then response per unit stress.
+        let eps = 2.0 * (observed / times.len() as f64).sqrt();
         println!(
-            "{:<6} {:>9.4} {:>8} {:>10.1} {:>11.1} {:>9.1} {:>8.4}{}{}",
+            "{:<6} {:>9.4} {:>9.2} {:>10.1} {:>9.1} {:>10.3e} {:>8.4}{}{}",
             name,
             period,
-            n_blocks,
+            amp,
             observed,
-            med,
             observed / med,
+            eps / amp,
             p,
             if p < 0.05 { "  *" } else { "" },
-            if n_blocks < 8 { "  [few blocks]" } else { "" }
+            if n_blocks < 8 { "  [few]" } else { "" }
         );
         results.push((name.to_string(), p, n_blocks));
     }
@@ -128,6 +177,9 @@ fn main() {
     }
     println!("\nBenjamini-Hochberg at FDR 0.05: {k}/{} constituents survive", ps.len());
     println!("null floor 1/(n+1) = {:.4}", 1.0 / (NULL_TRIALS as f64 + 1.0));
+    println!("\namp  = dCFS amplitude at this constituent, Pa (Love-calibrated, ~2x)");
+    println!("R(w) = eps/amp: fractional rate modulation per Pa -- the transfer function");
     println!("\nK1, S1, S2, P1, K2 excluded: locked to solar time and degenerate");
     println!("with the diurnal/thermal detection artifact measured in D1.");
+    Ok(())
 }

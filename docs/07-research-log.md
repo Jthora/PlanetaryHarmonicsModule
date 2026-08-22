@@ -1305,3 +1305,92 @@ frequency dependence within the semidiurnal band or a leak we have not found.
 not for producing a null-valid phase. D2 is closed as a blocker.
 
 Trap count stays at six. This run introduced none, which is the first time.
+
+---
+
+## 2026-08-22 — F2, and a correction to the previous entry
+
+### F2 — elastic calibration
+
+`ph_core::love` converts tidal tensors (s⁻²) to stress (Pa) via the standard
+degree-2 surface relation: potential from the tensor's radial component, strain via
+`(2h₂ − 6l₂)`, stress via Hooke's law. **Not** a full elastic solution — an
+order-unity-accurate scalar calibration, documented as good to ~2×. 7 tests.
+
+Validation, and a striking one:
+
+```text
+M2 solid Earth tide:  strain 9.92e-9    stress 595 Pa  (5.95e-4 MPa)
+Thomas et al. (2012) Parkfield A*sigma0:      600 Pa  (6.0e-4 MPa)
+```
+
+**Independently calibrated M2 stress matches the published `Aσ₀` to 1%.** So
+`S_T/Aσ₀ ≈ 1` at Parkfield — squarely in the 0.2–2 range Heimisson & Avouac
+identify as non-linear. That is an independent explanation for **C3's slope of
+3.56**, steeper than the linear prediction of 2, arrived at from elastic constants
+rather than from the seismicity.
+
+### ✗ Correction: C4 is not band-limited
+
+The previous entry read C4's raw `D²/N` — 17,975 at M2 against 338 at Mf — as a
+transfer function falling with period, and concluded the response was
+"band-limited at hours-to-a-day."
+
+**That was wrong.** `D²/N` is response to *whatever forcing exists at that
+frequency*, and the tidal potential's own amplitudes fall with period. Dividing by
+the ΔCFS amplitude at each constituent — obtained by least-squares regression on
+the analytic Doodson phase, so it is the stress *this fault at this site* actually
+sees — gives:
+
+| Band | Period (d) | Amp (Pa) | `D²/N` | **R(ω) per Pa** | p |
+|---|---|---|---|---|---|
+| M2 | 0.5175 | 679 | 17,975 | **3.19e-4** | 0.0025 ✱ |
+| N2 | 0.5274 | 130 | 1,559 | **4.92e-4** | 0.0025 ✱ |
+| O1 | 1.0758 | 137 | 8,020 | **1.06e-3** | 0.0025 ✱ |
+| Q1 | 1.1195 | 26 | 254 | **9.87e-4** | 0.0025 ✱ |
+| Mf | 13.661 | 74 | 338 | 4.02e-4 | 0.33 |
+| Mm | 27.555 | 37 | 638 | 1.12e-3 | 0.20 |
+| Ssa | 182.62 | 34 | 431 | 9.93e-4 | 0.65 |
+| Sa | 365.26 | 4.9 | 4,654 | 2.26e-2 | 0.12 [few blocks] |
+
+**Response per unit stress varies by a factor of ~3 across 0.5 d to 27 d — a
+50-fold range in period.** The 208× spread in raw ratio was almost entirely the
+forcing amplitude spectrum.
+
+Consequences:
+
+1. **No band limitation is detected between 0.5 d and 27 d.** The response looks
+   effectively scale-free there.
+2. **`T_a` is not located.** The previous entry's `T_a ≲ 1 d` bound is withdrawn,
+   and with it the "tension" between that bound and published `Aσ₀` — there was no
+   tension, only a normalisation error.
+3. **Non-significance at Mf, Msf and Mm is a power problem, not a physics one.**
+   Their forcing amplitudes are small, so ε is small, so the same `R` yields less
+   detectable concentration.
+4. Sa's `R` of 2.26e-2 is 20× everything else, but it is non-significant with 5
+   blocks and only 4.9 Pa of forcing. **`R` is unreliable wherever amplitude is
+   small and response is non-significant**, since ε is then noise divided by a
+   small number. It is not a result.
+
+### The methodological point
+
+A raw response measurement is not a transfer function. **Dividing by the forcing is
+not a refinement, it is the definition** — and skipping it produced a confident,
+wrong, physically-flavoured conclusion that survived one whole entry before the
+normalisation caught it.
+
+This did not come from a bad null. All the statistics were sound. It came from
+reporting `D²/N` as though it answered a question it does not answer — which is the
+same shape as the six traps, arriving through interpretation rather than through
+the statistic.
+
+### What this does to the plan
+
+**Phase 3's control is stronger than expected.** If Parkfield's `R(ω)` really is
+flat over 0.5–27 d, then a *flat* result for ordinary crust would say the band
+prediction is wrong, while a rising `R(ω)` toward years would confirm it. The
+comparison no longer depends on our reading of a roll-off we never measured.
+
+**Still needed for the long-period end:** the non-significance at Mf/Mm/Ssa/Sa is
+power-limited, and more events will not fix Sa's 5 blocks. A longer catalogue or a
+second site is the only route.

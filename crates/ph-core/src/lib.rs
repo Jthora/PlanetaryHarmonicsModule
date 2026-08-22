@@ -18,6 +18,7 @@
 //! - [`ephemeris`] — batched geometric states, wrapping `rustspice-core`
 //! - [`field`] — tidal fields from real ephemeris geometry
 //! - [`fault`] — resolving a tensor onto a fault plane; Coulomb failure stress
+//! - [`love`] — elastic response; tensors to stress in Pa, and `T_a`
 //! - [`catalog`] — event catalogues
 //! - [`apollo`] — Apollo PSE catalogue ingestion (Phase 1 validation)
 //! - [`parkfield`] — Parkfield LFE catalogue ingestion (Phase 2 testbed)
@@ -36,6 +37,7 @@ pub mod ephemeris;
 pub mod fault;
 pub mod field;
 pub mod harmonics;
+pub mod love;
 pub mod parkfield;
 pub mod phase;
 pub mod stats;

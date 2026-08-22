@@ -200,7 +200,7 @@ quantitatively. **F2 is no longer a parallel nicety; it is on the critical path.
 |---|---|---|
 | ~~C3b~~ | **Done.** 2,000 trials: slope 3.56, null median 0.43, null max 4.09, **p = 0.0095**. Survives, but weaker than the floor suggested | ✓ |
 | **C2b** | Alias analysis — enumerate catalogue periodicities, compute beats against the constituent list, blacklist collisions | Outstanding validity gate. The 24 h detection cycle is strong enough (S1 power 16,245) that its beats will contaminate elsewhere. |
-| ~~C4~~ | **Done** via analytic Doodson phases and a per-block shift null. Response is **band-limited at hours-to-a-day**: M2 208×, O1 123×, N2 49×, Q1 8.3× over their null medians, all p = 0.0025; every long-period constituent non-significant. **4/9 survive BH-FDR.** | ✓ |
+| ~~C4~~ | **Done** via analytic Doodson phases and a per-block shift null. 4/9 constituents survive BH-FDR. After normalising by forcing amplitude, **R(ω) is flat to within ~3× across 0.5–27 d** — the apparent band limitation was the tidal potential's own amplitude spectrum. No `T_a` located | ✓ |
 
 C4 is the scientific centre of gravity here. It converts "LFEs respond to tides"
 into "LFEs respond *like this* as a function of frequency", which is the object the
@@ -210,7 +210,7 @@ whole project is built to measure.
 
 | # | Task | Why |
 |---|---|---|
-| **F2** | IERS Conventions Ch. 7 — Love numbers, frequency-dependent corrections | **Now critical path.** Without it `Aσ₀` is unknown and `T_a` cannot be located, so the band prediction is untestable even with a perfect spectrum. |
+| ~~F2~~ | **Done.** `ph_core::love`, degree-2 elastic calibration, good to ~2×. M2 solid Earth tide = **595 Pa** against Thomas et al.'s `Aσ₀` = 600 Pa, matching to 1% — independently explaining why Parkfield is non-linear and why C3's slope exceeds 2 | ✓ |
 | **C5** | Second site — Cascadia tremor (PNSN, `pnsn.org/tremor`) | Every Parkfield result rests on **one location with co-located families**. C2's phase coherence was explicitly a coherence check, not independent confirmation. A second site is the cheapest genuine independence available. |
 
 ## Then — Phase 3, which needs the split
