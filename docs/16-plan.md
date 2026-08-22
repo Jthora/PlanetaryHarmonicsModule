@@ -92,8 +92,10 @@ B1 is needed by Layer 2's own ML regardless of any split
 
 | # | Task | Depends on |
 |---|---|---|
-| **C1** | Ingest a Cascadia or Parkfield LFE catalogue | A3 |
-| **C2** | Full exponential response `R₀exp(S_T/Aσ₀)` with M > 1 — tremor is non-linear | C1 |
+| ~~C1~~ | **Done.** Shelly Parkfield LFE catalogue: 1,528,117 events, 88 families, 23.1 yr, USGS public domain | ✓ |
+| **D1′** | **Done.** M2/S2 gate fires — S2 is 4.2× M2 and K1 sits at 1.16× the S1 artifact floor. Raw period folding on this catalogue measures the detector | ✓ |
+| **C2** | Resolve ΔCFS on San Andreas geometry at family locations and test *phase*, not folded period — the only way past the detection artifact. Full exponential `R₀exp(S_T/Aσ₀)`, M > 1 | C1 |
+| **C2b** | Alias analysis — blacklist beats against the 24 h detection cycle | C1 |
 | **C3** | Measure the response spectrum where the effect is strong | C2 |
 
 ## Track D — Test the band prediction

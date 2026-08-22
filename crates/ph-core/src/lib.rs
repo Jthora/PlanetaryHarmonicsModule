@@ -18,6 +18,7 @@
 //! - [`fault`] — resolving a tensor onto a fault plane; Coulomb failure stress
 //! - [`catalog`] — event catalogues
 //! - [`apollo`] — Apollo PSE catalogue ingestion (Phase 1 validation)
+//! - [`parkfield`] — Parkfield LFE catalogue ingestion (Phase 2 testbed)
 //!
 //! # A standing invariant
 //!
@@ -31,6 +32,7 @@ pub mod ephemeris;
 pub mod fault;
 pub mod field;
 pub mod harmonics;
+pub mod parkfield;
 pub mod phase;
 pub mod stats;
 pub mod tidal;

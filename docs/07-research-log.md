@@ -840,3 +840,95 @@ Phase 1 has now produced its real deliverable, which is not "tides drive
 moonquakes" — that was known — but a **validated instrument plus two documented
 ways to fool it**. Both traps are waiting in Phase 3, where earthquake catalogues
 carry aftershock clustering and seasonal detection cycles of their own.
+
+---
+
+## 2026-08-22 — C1/D1: Parkfield LFEs, and the M2/S2 gate fires
+
+**Code:** `ph-core::parkfield`, `examples/parkfield_constituents.rs`. 48 tests.
+
+### The dataset
+
+Shelly (2017, updated 2024), from USGS ScienceBase — **public domain**.
+**1,528,117 LFEs, 88 families, 23.1 years.** Every family holds ≥5,333 events;
+median 16,058, max 44,156. Compare the largest Apollo moonquake nest at 85.
+
+LFE **families** are the direct analogue of moonquake **nests**. Most families
+individually clear Beeler & Lockner's ~10⁴ event requirement.
+
+### The measurement
+
+Schuster power evaluated at the **exact** periods of named constituents rather
+than by blind peak search, which turns doc 08 §13b's validity gate into a direct
+measurement. Pooled catalogue:
+
+| Constituent | Period (d) | Power | vs S1 |
+|---|---|---|---|
+| M2 principal lunar | 0.5175 | 1,831 | 0.11 |
+| **S2 principal solar** | 0.5000 | **7,729** | 0.48 |
+| N2 larger elliptic | 0.5274 | 21 | 0.00 |
+| **K1 luni-solar diurnal** | 0.9973 | **18,861** | **1.16** |
+| **S1 solar diurnal** | 1.0000 | **16,245** | 1.00 |
+| O1 principal lunar diurnal | 1.0758 | 8,052 | 0.50 |
+| Mf lunar fortnightly | 13.661 | 334 | 0.02 |
+| Msf lunar synodic fortnightly | 14.765 | 663 | 0.04 |
+| Mm lunar monthly | 27.555 | 631 | 0.04 |
+| Ssa solar semiannual | 182.62 | 431 | 0.03 |
+| Sa solar annual | 365.26 | 4,654 | 0.29 |
+
+Null expectation for `D²/N` is **1**. The largest family alone reproduces every
+ratio to within a few percent.
+
+### The gate fires
+
+**S1 is exactly 24.000 h and has essentially no body-tide amplitude.** Its power of
+16,245 is therefore a *direct measurement of the detection artifact floor* — LFE
+detection is template matching on continuous data, and its sensitivity tracks the
+day-night cultural noise cycle.
+
+Three readings follow immediately:
+
+1. **K1 (23.93 h) at 1.16× S1 is unusable**, exactly as doc 08 §13b predicted.
+   Degenerate with the diurnal artifact.
+2. **S2 (7,729) exceeds M2 (1,831) by 4.2×.** For a genuine body tide the ordering
+   must be the other way — the M2 tidal potential is roughly 2.2× S2's. Seeing S2
+   dominate is the signature of a **thermal or cultural semidiurnal cycle**, not a
+   body tide. **The gate returns "suspect artifact."**
+3. **Sa (4,654) is large but confounded** with seasonal variation in detection.
+
+### What this does and does not mean
+
+**It does not contradict the literature.** Thomas et al. (2012) find strong tidal
+modulation of Parkfield LFEs — but they resolve *tidal stress on the fault* and
+test its phase. They do not fold event times on trial periods.
+
+**The lesson is sharper than "the catalogue is noisy":**
+
+> **Raw period folding on a detection-limited catalogue measures the detector, not
+> the Earth.**
+
+Our own doc 02 argued this from theory. It is now measured, on a catalogue chosen
+because the physical effect there is known to be strong.
+
+**This is the third trap the machinery has caught**, after the pooled-phase null
+(A3/A4) and the uniform-time null (A5/A6). All three share a shape: *a statistic
+that looks decisive while silently answering a different question.*
+
+### Consequence for the band prediction
+
+**This run does not test it.** The long-period constituents (Mf 334, Msf 663,
+Mm 631, Ssa 431) are all far below the diurnal artifacts — but that comparison is
+meaningless while the diurnal band is artifact-dominated. Testing the 1 yr–200 yr
+band prediction requires the artifact removed first.
+
+### Next (C2)
+
+Do it properly, as Thomas et al. do: compute the tidal tensor at the Parkfield
+family locations, resolve ΔCFS onto San Andreas geometry (`ph-core::fault` already
+does this), and test phase against a structure-preserving null. The full
+exponential response `R₀exp(S_T/Aσ₀)` with `M > 1` is required here — Thomas et al.
+infer `Aσ₀ = 6×10⁻⁴ MPa`, putting Parkfield firmly in the non-linear regime.
+
+Also worth adding: an explicit **alias analysis** (doc 08 §13e). With a 24 h
+detection cycle this strong, beats against it will appear elsewhere in the
+spectrum and need blacklisting.
