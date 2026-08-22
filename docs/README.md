@@ -39,7 +39,7 @@ RustSPICE  (modules/RustSPICE)   ephemeris + time + coordinate frames
 
 ## Status
 
-Library. `ph-core` (61 tests), `ph-features` CLI, and Python bindings via
+Library. `ph-core` (68 tests), `ph-features` CLI, and Python bindings via
 `ph-py`. Validated by the seismology programme downstream: deep moonquake
 periodicities recovered to better than 0.21%, and tidal response replicated at two
 independent tremor sites. Literature base and
