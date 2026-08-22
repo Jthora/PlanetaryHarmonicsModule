@@ -1212,3 +1212,96 @@ D2 moves from parallel task to **prerequisite for C4**.
 
 Six for six, all the same shape: *a statistic that looks decisive while silently
 answering a different question.*
+
+---
+
+## 2026-08-22 — D2/C4 redone: the first transfer function
+
+### D2 turned out not to need a download
+
+The blocker was thought to be catalogue access. It was not. Constituent **phase**
+is an integer combination of six astronomical arguments, each an analytic
+polynomial in time — no catalogue required. Only constituent **amplitudes** need
+HW95/KSM03, and phase is what the statistics use.
+
+`ph_core::doodson` implements the six fundamental arguments (τ, s, h, p, N′, pₛ)
+and 13 named constituents. **All six tests passed first run**, including the one
+that matters:
+
+- Every constituent period matches its published value to better than 0.1%,
+  measured from the argument's rate rather than assumed
+- **Phase histograms are flat to <5% over 12 bins** (M2) and <10% (long period) —
+  *precisely the uniformity that demodulated phase lacked*
+- S2 repeats exactly every half solar day; M2 does not
+
+### The null that finally works
+
+A **global** time shift can never work for a single constituent: `D²` is invariant
+under rotation, and shifting one constituent's phase globally *is* a rotation. That
+is a property of the statistic, not a fixable detail.
+
+So the null shifts **each block independently**, with block length `max(4×period,
+30 d)`. Within-block clustering is preserved; alignment between blocks is
+randomised. Concentration changes, which is what a null must do.
+
+### Result — 1,528,117 events, 23 years
+
+| Band | Period (d) | Blocks | `D²/N` | Null median | Ratio | p |
+|---|---|---|---|---|---|---|
+| **M2** | 0.5175 | 280 | 17,975 | 86 | **208** | 0.0025 ✱ |
+| **N2** | 0.5274 | 280 | 1,559 | 32 | **49** | 0.0025 ✱ |
+| **O1** | 1.0758 | 280 | 8,020 | 65 | **123** | 0.0025 ✱ |
+| **Q1** | 1.1195 | 280 | 254 | 31 | **8.3** | 0.0025 ✱ |
+| Mf | 13.661 | 154 | 338 | 235 | 1.4 | 0.33 |
+| Msf | 14.765 | 142 | 660 | 218 | 3.0 | 0.13 |
+| Mm | 27.555 | 76 | 638 | 262 | 2.4 | 0.20 |
+| Ssa | 182.62 | 11 | 431 | 666 | 0.6 | 0.65 |
+| Sa | 365.26 | 5 | 4,654 | 1,783 | 2.6 | 0.12 |
+
+**4/9 survive Benjamini-Hochberg at FDR 0.05 — and all four are short-period.**
+
+**The response is band-limited, with the band at hours-to-a-day.** It falls roughly
+two orders of magnitude between 0.5 d and 14 d, and every long-period constituent
+is non-significant.
+
+### Why this is the measurement we wanted
+
+Doc 07's band prediction says **ordinary crust** should respond at **1 yr–200 yr**
+and be damped below that. Parkfield is *tremor*, where `T_a` is short — so the
+prediction for Parkfield is the **opposite** shape, and that is what we measure.
+
+**Phase 3 now has a control.** If terrestrial earthquakes show the *same* shape as
+Parkfield, the band prediction is wrong. If they show the mirror image — nothing at
+M2, response at Sa and longer — it is confirmed. Either way the comparison is
+decisive, which no single measurement could be.
+
+### An internal check, half passing
+
+`D²/N ∝ amplitude²`, so same-band constituent ratios test the amplitude law
+independently of frequency (doc 08 §13a). Both pairs have amplitude ratios near
+5.3, predicting a response ratio near 28:
+
+- **O1/Q1 = 31.6** against 28 predicted — close
+- **M2/N2 = 11.5** against 28 predicted — off by 2.4×
+
+Partial support. Worth understanding rather than glossing: N2 responding more than
+its amplitude warrants is the kind of discrepancy that either indicates a real
+frequency dependence within the semidiurnal band or a leak we have not found.
+
+### Caveats
+
+1. **Long-period constituents are underpowered.** Ssa gets 11 blocks and Sa only 5.
+   Non-significance there **cannot be distinguished from insufficient power**, and
+   must not be read as evidence of absence.
+2. The null median rises with period (86 → 1,783) because longer blocks mean fewer
+   randomisations. Ratios are the fair comparison; raw `D²/N` across constituents
+   is not.
+3. No Love numbers, so this is response versus *frequency*, not response per unit
+   *stress*. Converting to a true `R(ω)` still needs F2.
+
+### Status
+
+**C4 done.** `ph_core::demod` remains — correct for isolating a constituent, just
+not for producing a null-valid phase. D2 is closed as a blocker.
+
+Trap count stays at six. This run introduced none, which is the first time.

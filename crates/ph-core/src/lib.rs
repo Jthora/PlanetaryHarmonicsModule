@@ -13,6 +13,7 @@
 //! - [`harmonics`] — Fourier angular encodings and least-squares decomposition
 //! - [`phase`] — tidal phase from a sampled quasi-periodic forcing
 //! - [`demod`] — complex demodulation; isolating one constituent for R(ω)
+//! - [`doodson`] — analytic constituent phases from the fundamental arguments
 //! - [`stats`] — the generalised Schuster test and time-shifted null distributions
 //! - [`ephemeris`] — batched geometric states, wrapping `rustspice-core`
 //! - [`field`] — tidal fields from real ephemeris geometry
@@ -30,6 +31,7 @@
 pub mod apollo;
 pub mod catalog;
 pub mod demod;
+pub mod doodson;
 pub mod ephemeris;
 pub mod fault;
 pub mod field;

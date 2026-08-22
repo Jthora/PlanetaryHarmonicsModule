@@ -104,7 +104,7 @@ B1 is needed by Layer 2's own ML regardless of any split
 | # | Task | Depends on |
 |---|---|---|
 | **D1** | M2-vs-S2 and alias-analysis validity gates | A3 |
-| **D2** | Free HW95/KSM03 catalogue data (Kudryavtsev & Cionco 2025, arXiv:2508.18111, ships in HW95 format) | **Now a prerequisite for C4** — analytic constituent arguments are the only phase definition whose null behaves |
+| ~~D2~~ | **Closed as a blocker.** Constituent *phase* needs no catalogue — it is an analytic combination of six astronomical arguments, now in `ph_core::doodson`. Only *amplitudes* need HW95/KSM03, which F2 will want | ✓ |
 | **D3** | Broadband response spectrum — tides, hydrological, pole tide, LOD in one fit | C3, D2 |
 
 **D3 is the project's central question.** Everything before it is instrument-building.
@@ -200,7 +200,7 @@ quantitatively. **F2 is no longer a parallel nicety; it is on the critical path.
 |---|---|---|
 | ~~C3b~~ | **Done.** 2,000 trials: slope 3.56, null median 0.43, null max 4.09, **p = 0.0095**. Survives, but weaker than the floor suggested | ✓ |
 | **C2b** | Alias analysis — enumerate catalogue periodicities, compute beats against the constituent list, blacklist collisions | Outstanding validity gate. The 24 h detection cycle is strong enough (S1 power 16,245) that its beats will contaminate elsewhere. |
-| **C4** | ⚠ **Attempted and failed.** Deriving constituent phase by demodulating the composite ΔCFS makes each band a near-pure tone, which kills the time-shift null (trap 5), and sham frequencies return the leaking constituent's phase rather than a neutral baseline (trap 6). **Redo using analytic Doodson arguments — blocked on D2.** |
+| ~~C4~~ | **Done** via analytic Doodson phases and a per-block shift null. Response is **band-limited at hours-to-a-day**: M2 208×, O1 123×, N2 49×, Q1 8.3× over their null medians, all p = 0.0025; every long-period constituent non-significant. **4/9 survive BH-FDR.** | ✓ |
 
 C4 is the scientific centre of gravity here. It converts "LFEs respond to tides"
 into "LFEs respond *like this* as a function of frequency", which is the object the
