@@ -1,0 +1,15 @@
+[package]
+name = "planetary-harmonics-cli"
+description = "Feature export for PlanetaryHarmonics: tidal tensors, Coulomb stress, constituent phases"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+
+[[bin]]
+name = "ph-features"
+path = "src/main.rs"
+
+[dependencies]
+planetary-harmonics-core = { path = "../ph-core" }
+rustspice-core.workspace = true

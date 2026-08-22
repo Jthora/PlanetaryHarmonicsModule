@@ -1,6 +1,6 @@
 [workspace]
 resolver = "2"
-members = ["crates/ph-core"]
+members = ["crates/ph-core", "crates/ph-cli"]
 # RustSPICE is a submodule with its own workspace root. Without this, Cargo walks
 # up from its crates and tries to inherit workspace deps from *this* manifest.
 exclude = ["modules/RustSPICE"]
