@@ -20,6 +20,7 @@
 //! - [`tidal`] — tide-generating potential, the tidal tensor, concentration nodes
 //! - [`harmonics`] — Fourier angular encodings and least-squares decomposition
 //! - [`chart`] — body states in geocentric, heliocentric and barycentric frames
+//! - [`chart_features`] — aspects, declinations, shape and resonance from a chart
 //! - [`commensurability`] — multi-body angular relationships under d'Alembert
 //! - [`harmonic_model`] — precompute a harmonic ephemeris; O(1) timestream queries
 //! - [`phase`] — tidal phase from a sampled quasi-periodic forcing
@@ -41,6 +42,7 @@
 
 pub mod catalog;
 pub mod chart;
+pub mod chart_features;
 pub mod commensurability;
 pub mod demod;
 pub mod doodson;
