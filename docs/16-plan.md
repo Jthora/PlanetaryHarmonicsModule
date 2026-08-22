@@ -221,7 +221,7 @@ whole project is built to measure.
 | **B2** | CLI emitting features as CSV/Parquet with provenance |
 | **B3** | Create `EarthquakeForecastModule`, add `HANDOFF.md`, submodule `ph-core` |
 | **P3.1** | USGS ComCat ingestion + magnitude-of-completeness per region and epoch |
-| **P3.2** | GCMT focal mechanisms → fault geometry (fixed, not searched — the Earth case is the *easy* one) |
+| **P3.2** | GCMT focal mechanisms → real ΔCFS per event. **Now the highest-value step.** Raw tidal phase is blind to whether the tide loads or unloads each fault, so compressional and extensional responses cancel in the pooled statistic. Raises signal by aligning the feature with the physics rather than by discarding data |
 | **P3.3** | ETAS baseline, fitted and frozen |
 | **P3.4** | **Response spectrum for ordinary crust** — the band prediction test |
 | **P3.5** | β(x,t) sensitivity field; CSEP evaluation |

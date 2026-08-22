@@ -1585,3 +1585,78 @@ way to test it later without it becoming a post-hoc find. **It is not a result.*
 moonquake validation, the two-site tremor replication, the amplitude law, the
 elastic calibration. The central question remains open, and now has a number
 attached to what would close it.
+
+---
+
+## 2026-08-22 — P3.5: depth stratification fails, and that is a stop signal
+
+**Code:** `examples/depth_stratified_test.rs`.
+
+### The pre-registered prediction
+
+P3.4's global catalogue mixes every depth and fault geometry, diluting any effect
+concentrated in one setting. Métivier et al. (2009) report the tidal anomaly is
+**larger for shallower earthquakes**; Cochran et al. (2004) find their factor-3
+effect in *shallow thrust* faults specifically.
+
+So: **shallow responds more strongly than deep.** One split at 70 km, fixed before
+running, no scanning over cut depths.
+
+### Result — not supported
+
+20,770 shallow (≤70 km) against 5,192 deep.
+
+| Band | shallow ε | shallow limit | p | deep ε | deep limit | p |
+|---|---|---|---|---|---|---|
+| M2 | 0.13% | <4.80% | 0.99 | 4.18% | <6.92% | 0.14 |
+| N2 | 2.07% | <4.22% | 0.17 | 1.52% | <7.46% | 0.78 |
+| O1 | 1.04% | <5.16% | 0.72 | 1.60% | <7.98% | 0.77 |
+| Mf | 2.52% | <5.57% | 0.39 | 2.17% | <7.53% | 0.59 |
+| Mm | 1.14% | <6.48% | 0.90 | 2.44% | <7.99% | 0.51 |
+| Sa | 3.13% | <7.49% | 0.59 | 3.47% | <8.35% | 0.39 |
+
+**Nothing significant anywhere.** Shallow exceeded deep in **2/6 bands — fewer than
+the 3 expected by chance.** Sign test p = 0.89 one-tailed. At M2 the shallow set is
+essentially flat (0.13%) while the deep set is *higher* (4.18%), the opposite of
+the prediction, though not significant.
+
+### Why this is a stop signal, not a prompt to slice further
+
+Splitting halved the sample, so every bound loosened — 4.8–8.4% here against
+3.9–6.3% unsplit. **That was flagged in the example's own header before running,
+and it is the general shape of the problem: each additional stratification makes
+the bound worse, not better.**
+
+Two stratifications in, nothing found, and the bounds are degrading. Continuing to
+slice — by magnitude band, by region, by mechanism proxy, by cut depth — is exactly
+the failure mode the pre-commitment in doc 16 §decision-4 exists to prevent:
+**keep cutting until something crosses p < 0.05.** With six constituents and a
+handful of strata, something eventually will.
+
+**Stop slicing. The catalogue is power-limited and no partition fixes that.**
+
+### What genuinely differs from slicing
+
+One improvement is not a partition and is worth doing: **the earthquake analysis
+used a weaker feature than it needed to.**
+
+Both the tremor and earthquake tests used analytic Doodson phase — appropriate, and
+apples-to-apples, since D² is unaffected by the constant longitude offset at a
+single site. But raw tidal phase is blind to whether the tide actually *loads or
+unloads each fault*. Parkfield's C2 result used ΔCFS resolved on a known fault
+plane and found phase clustering; the global test has no mechanisms, so
+compressional and extensional responses cancel in the pooled statistic.
+
+**GCMT focal mechanisms would let us compute real ΔCFS per event** (`ph_core::fault`
+already does the projection). That raises the signal by aligning the feature with
+the physics rather than by discarding data — the opposite of stratification.
+
+That is P3.2, and it is now the highest-value next step.
+
+### Standing position
+
+- **P3.4 stands:** ordinary crust <3.88% at M2, <4.33% at O1, tremor exceeds those
+  bounds by 5.6× and 3.3×.
+- **The band prediction remains untested.** Long-period bounds are 5–8%, far too
+  loose to exclude the predicted response.
+- **Reaching 1% needs ~400,000 events.** No partition of 25,962 gets there.
