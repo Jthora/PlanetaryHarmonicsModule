@@ -81,9 +81,9 @@ them.
 
 | # | Task | Depends on |
 |---|---|---|
-| **B1** | `pyo3`/`maturin` bindings on `ph-core` | — |
+| ~~B1~~ | **Done.** cp39-abi3 wheel, verified on Python 3.14 | ✓ |
 | **B2** | CLI emitting feature vectors as CSV/Parquet with full provenance | — |
-| **B3** | Create `EarthquakeForecastModule`; add `HANDOFF.md` ([15](15-earthquake-forecast-handoff.md)); add `ph-core` as a submodule | A5 |
+| ~~B3~~ | **Done.** [EarthquakeForecastModule](https://github.com/Jthora/EarthquakeForecastModule) created with an expanded `HANDOFF.md`, README and this repo as a submodule. Fresh recursive clone verified: full chain resolves and 72 tests pass | ✓ |
 
 B1 is needed by Layer 2's own ML regardless of any split
 ([13-ml-stack.md](13-ml-stack.md) §2c), so it is not speculative.

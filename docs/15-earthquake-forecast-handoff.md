@@ -1,5 +1,29 @@
 # EarthquakeForecastModule — Handoff
 
+> ## ⚠ Superseded — the canonical copy now lives in the forecasting repo
+>
+> The repository exists:
+> **<https://github.com/Jthora/EarthquakeForecastModule>**
+>
+> Its `HANDOFF.md` is the live document and is **substantially expanded** over what
+> follows. Everything below predates A5/A6, C1–C5, F2 and B1/B2, so it is missing:
+>
+> - the **two-site replication** — M2, N2 and O1 significant at both Parkfield and
+>   Cascadia, 8/9 constituents agreeing across different tectonics, geography and
+>   detection method
+> - the **amplitude law** (log-log slope 3.56, p = 0.0095)
+> - the **elastic calibration** — M2 solid Earth tide at 595 Pa against an
+>   independently inferred `Aσ₀` of 600 Pa
+> - **`R(ω)` flat to ~3× across 0.5–27 d**, so no band limit is measured anywhere
+> - **traps 5 and 6**, and the non-null failure of reporting raw response as a
+>   transfer function
+> - the corrected framing: **tremor is the control, not the test**
+>
+> **Edit the copy in the forecasting repo, not this file.** Retained only as a
+> record of what the handoff looked like when first drafted.
+
+---
+
 **Copy this file into the new repository as `HANDOFF.md`.** It is written to be
 read cold, without access to the PlanetaryHarmonics research log.
 
