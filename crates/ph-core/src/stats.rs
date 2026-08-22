@@ -35,6 +35,38 @@
 //! from an idealised single constituent. For a genuinely single-frequency test,
 //! the time-shift null must be replaced — by phase randomisation, or by an
 //! analytic Schuster p-value with a red-noise correction.
+//!
+//! # ⚠ The degeneracy is broader than "single frequency" — measured
+//!
+//! Quasi-periodicity in the forcing is **not sufficient**. What matters is whether
+//! the *catalogue* shares the forcing's period.
+//!
+//! Measured on the Apollo deep moonquakes (`examples/moonquake_tidal_phase.rs`),
+//! where the catalogue is itself locked near the anomalistic month and so is the
+//! forcing:
+//!
+//! ```text
+//! analytic Schuster, order 1:   D²/N = 204.9   p = 1.07e-89
+//! time-shift null, 308 offsets: observed D² = 1.42e6
+//!                               null max    = 1.13e7      empirical p = 0.699
+//! ```
+//!
+//! **The analytic p-value overstates significance by roughly 88 orders of
+//! magnitude.** Nearly a third of shifted realisations cluster *at least as
+//! strongly* as the true alignment, and the strongest clusters eight times harder.
+//!
+//! The reason: when catalogue and forcing share a near-constant period, a global
+//! shift rotates the phase cluster to a different phase but leaves its
+//! concentration intact. Clustering is then guaranteed at *some* phase, and
+//! "do events cluster in tidal phase?" is not a falsifiable question.
+//!
+//! **The falsifiable question is which phase, and whether it is consistent across
+//! independent sub-populations** in a way a failure mechanism predicts — which is
+//! why Weber et al. (2009) work per moonquake nest rather than on the pooled
+//! catalogue.
+//!
+//! Treat a large `D²` with a *near-unity* empirical p as the null doing its job,
+//! not as a bug.
 
 /// Result of a Schuster test at one harmonic order.
 #[derive(Debug, Clone, Copy, PartialEq)]

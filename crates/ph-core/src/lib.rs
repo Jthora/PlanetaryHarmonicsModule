@@ -11,6 +11,7 @@
 //!
 //! - [`tidal`] — tide-generating potential, the tidal tensor, concentration nodes
 //! - [`harmonics`] — Fourier angular encodings and least-squares decomposition
+//! - [`phase`] — tidal phase from a sampled quasi-periodic forcing
 //! - [`stats`] — the generalised Schuster test and time-shifted null distributions
 //! - [`ephemeris`] — batched geometric states, wrapping `rustspice-core`
 //! - [`field`] — tidal fields from real ephemeris geometry
@@ -28,6 +29,7 @@ pub mod catalog;
 pub mod ephemeris;
 pub mod field;
 pub mod harmonics;
+pub mod phase;
 pub mod stats;
 pub mod tidal;
 

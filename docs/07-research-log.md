@@ -656,3 +656,90 @@ Not yet done in Phase 1: the time-shift null on these peaks, and the ephemeris p
 — computing actual tidal phase from Earth–Moon–Sun geometry rather than folding on
 trial periods. The latter needs lunar kernels and is what carries forward to
 Phases 2 and 3.
+
+---
+
+## 2026-08-21 — A3/A4: tidal phase implemented, and the null kills a 10⁻⁸⁹ result
+
+**Code:** `ph-core::phase`, `examples/moonquake_tidal_phase.rs`.
+
+### What was built
+
+Tidal phase by the standard construction (Tanaka et al. 2002 and successors):
+sample the forcing finely, locate successive **maxima**, assign each event a phase
+by interpolating between the maxima bracketing it. Peak times refined by parabolic
+interpolation for sub-sample accuracy.
+
+Forcing scalar: largest eigenvalue of the lunar tidal tensor from real Earth + Sun
+geometry in `MOON_PA`. Because the Moon is tidally locked, the tensor's
+*orientation* barely moves and its *magnitude* varies as GM/d³ — so maxima are
+lunar perigees and phase 0 means perigee.
+
+**Self-check passed:** mean interval between forcing maxima came out **27.539 d**
+against the anomalistic month's 27.555 d, confirming the scalar tracks lunar
+distance as intended.
+
+### The result
+
+6,954 deep moonquakes, all phased, none dropped.
+
+```text
+analytic Schuster, order 1:   D²/N = 204.9   p = 1.07e-89   phase −92.1°
+                     order 2: D²/N =  39.6   p = 6.52e-18   phase −91.7°
+
+time-shift null, 308 offsets: observed D² = 1.42e6
+                              null max    = 1.13e7      empirical p = 0.699
+```
+
+**The analytic test says p ≈ 10⁻⁸⁹. The time-shift null says p = 0.70.**
+
+Nearly a third of shifted realisations cluster at least as strongly as the true
+alignment, and the strongest cluster eight times harder. The analytic p-value
+overstates significance by roughly **88 orders of magnitude**.
+
+### Why — the degeneracy is broader than documented
+
+The second-pass caveat said the time-shift null is degenerate against a *single
+exact frequency*. That was too narrow. **Quasi-periodicity in the forcing is not
+sufficient.** What matters is whether the **catalogue** shares the forcing's period.
+
+Deep moonquakes are themselves locked near the anomalistic month. So is the
+forcing. A global shift then rotates the phase cluster to a different phase while
+leaving its concentration intact — exactly the invariance, arriving through the
+catalogue rather than through the forcing.
+
+Consequence: for this dataset, **"do events cluster in tidal phase?" is not a
+falsifiable question.** Both series are periodic at the same rate, so clustering is
+guaranteed at *some* phase.
+
+### What this does and does not mean
+
+**It does not mean deep moonquakes are not tidally driven.** The literature is
+unambiguous that they are, and our own periodogram recovers five tidal periods to
+better than 0.21%.
+
+**It means this particular test cannot demonstrate it** — and, more importantly,
+that reporting the analytic p-value alone would have been a false positive of
+spectacular size. The null did its job. This is the first time in the project that
+the machinery has caught something the naive analysis would have got badly wrong,
+and it caught it on the dataset we chose *because* we knew the answer.
+
+**The falsifiable question is which phase**, and whether it is consistent across
+independent sub-populations in a way a failure mechanism predicts. Which is
+precisely why Weber, Bills & Johnson (2009) work **per moonquake nest** rather than
+on the pooled catalogue — a design choice whose necessity is now measured rather
+than inherited.
+
+### Consequences for the plan
+
+- **A4 does not pass as specified.** The pooled-catalogue null cannot resolve the
+  1886 d and 901 d artifacts either, for the same reason. A4 needs restating as a
+  per-nest test.
+- **A5/A6 rise in priority.** Per-nest Coulomb projection against Weber's cluster
+  constraints is now the only route to a falsifiable Phase 1 claim, not merely a
+  second validation.
+- **Carry this to Phase 3.** Earthquake catalogues have strong internal
+  periodicity too — aftershock sequences, seasonal detection cycles. The same trap
+  is waiting, and the analytic Schuster p-value will be just as wrong there.
+- `nakamura_2005_dm_locations.csv` (106 nests, already downloaded) becomes the
+  next thing to use.

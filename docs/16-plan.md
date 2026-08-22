@@ -54,16 +54,28 @@ So **task 4 (Coulomb projection) moves up**, and merges with task 3.
 | **A1** | Fetch kernels; wire `ph-core` to load them | — |
 | **A2** | Compute lunar tidal tensor from real Earth + Sun geometry, in `MOON_PA` | A1 |
 | **A3** | Tidal phase from the full quasi-periodic forcing (not trial-period folding) | A2 |
-| **A4** | Run the time-shift null on the moonquake peaks — known periods should survive, **1886 d should not** | A3 |
+| ~~A4~~ | ~~Time-shift null on the pooled catalogue~~ — **does not work; see below** | — |
+| **A4′** | **Per-nest** phase test: is the preferred phase consistent within a nest and structured across nests? | A3 |
 | **A5** | Coulomb projection with fault orientation as a searchable parameter | A2 |
 | **A6** | Validate A5 against Weber 2009 per-cluster fits; use `nakamura_2005_dm_locations.csv` (already downloaded, unused) | A5 |
 
 **A3 is the linchpin.** The time-shift null is degenerate against a single exact
 frequency, so A4 cannot be done correctly without it.
 
-**Exit criterion:** known periods survive the null, 1886 d is shown to be a
-catalogue artifact, and the Coulomb projection reproduces Weber's cluster
-constraints.
+> **A4 failed as specified, 2026-08-21.** The time-shift null is degenerate
+> whenever the **catalogue** shares the forcing's period — not merely when the
+> forcing is a single sinusoid. Deep moonquakes are locked near the anomalistic
+> month and so is the forcing, so a shift rotates the phase cluster without
+> diluting it. Measured: analytic Schuster p = 1.07e-89, empirical p = 0.699.
+> See [07-research-log.md](07-research-log.md).
+>
+> **Pooled-catalogue tests cannot produce a falsifiable Phase 1 claim.** A5/A6
+> (per-nest Coulomb projection against Weber's constraints) are now the critical
+> path, not a bonus validation.
+
+**Exit criterion:** the Coulomb projection reproduces Weber's per-cluster fault
+constraints, and preferred phase is consistent within nests and structured across
+them.
 
 ## Track B — Prepare the split
 
