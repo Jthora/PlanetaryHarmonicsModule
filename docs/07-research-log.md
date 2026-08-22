@@ -932,3 +932,88 @@ infer `Aσ₀ = 6×10⁻⁴ MPa`, putting Parkfield firmly in the non-linear reg
 Also worth adding: an explicit **alias analysis** (doc 08 §13e). With a 24 h
 detection cycle this strong, beats against it will appear elsewhere in the
 spectrum and need blacklisting.
+
+---
+
+## 2026-08-22 — C2: first result that survives correction
+
+**Code:** `examples/parkfield_coulomb_phase.rs`.
+
+### The null, fixed before the run
+
+Every trap so far came from choosing a null after seeing the data, so this one was
+specified first and justified on structure.
+
+D1 established that the catalogue carries a large detection artifact locked to
+**solar time** (S1 power 16,245 against a null expectation of 1). So:
+
+> **Null: shift every event time by a whole number of solar days.**
+
+- The artifact is locked to local solar time → a whole-day shift leaves it
+  **exactly invariant**.
+- The lunar tide precesses ~50 min per solar day → a whole-day shift **does**
+  decorrelate ΔCFS phase.
+
+It holds the confound fixed while sliding only the quantity under test. 400 shifts
+drawn from ±(30–4000) days, excluding near-multiples of the 27.55 d anomalistic and
+29.53 d synodic months.
+
+### Setup
+
+ΔCFS from the real Earth tidal tensor (Moon, Sun, planets) in `IAU_EARTH`, rotated
+to local NED at 35.635 N, −120.150 E, resolved onto deep San Andreas geometry —
+strike 137°, dip 90°, rake 180°, μ = 0.4. Sampled at 0.02 d over 23 years plus
+padding: **841,272 points**.
+
+**Self-check passed:** mean interval between ΔCFS maxima came out **0.5175 d** —
+exactly M2. The forcing is what we think it is.
+
+### Result
+
+| | |
+|---|---|
+| Families tested (largest 12) | 12 |
+| Nominally p < 0.05 | **10 / 12** (0.6 expected) |
+| **Surviving Benjamini-Hochberg, FDR 0.05** | **9 / 12** |
+| `D²/N` range | 106 – 1702 (null expectation 1) |
+| Preferred phases | **all within 71.4°**, spanning 0.7° to 72.1° |
+
+**The null has demonstrable power.** Two families are *not* significant, with
+p = 0.14 and p = 0.22, and observed `D²` sits near — not far above — the null
+maximum for most families. That spread is the signature of a working null,
+in direct contrast to A5/A6's 73/74 pinned at the floor.
+
+Every family clusters **shortly after the ΔCFS maximum**, consistent with Thomas
+et al. (2012) for these same LFEs.
+
+Geometry is robust: `D²/N` moves only 404 → 415 across strike ±10° and dip 80–90°.
+A thrust geometry gives both lower power (356) and a very different phase
+(−108.8°), so the statistic does discriminate between orientations.
+
+### Caveats — none of these are small
+
+1. **The 12 families are co-located within ~30 km**, so they see nearly identical
+   forcing. Phase coherence across them is a **coherence check, not independent
+   confirmation**. It shows the pipeline returns a consistent answer; it is not 12
+   independent tests of phase.
+2. **Absolute phase is geometry-dependent.** Strike 127 → 137 → 147 shifts the
+   preferred phase 57° → 41° → 25°. The *existence* of clustering is robust; the
+   *value* should not be quoted without stating the assumed geometry.
+3. **Effect sizes are modest.** For most families observed `D²` is at roughly the
+   98th–99th percentile of the null, not orders above it.
+4. **No Love numbers**, so this is stress *shape*. Timing is unaffected; absolute
+   ΔCFS in Pa is unavailable.
+5. **This does not test the band prediction.** M2 is a 12.42 h constituent, deep
+   inside the range doc 07 predicts should be *damped* for ordinary crust. That it
+   works at Parkfield is consistent with tremor's `T_a` sitting in the tidal band —
+   but the 1 yr–200 yr prediction remains **entirely untested**.
+
+### Where this leaves the project
+
+Phase 1 delivered a validated instrument and three documented traps. **C2 is the
+first time the instrument has been pointed at contested data with a
+pre-specified null and returned a result that survives correction.**
+
+That is the methodological milestone the validation ladder existed to reach: not
+"we found a correlation," but "we found one *after* three separate opportunities to
+fool ourselves, using a null fixed in advance."

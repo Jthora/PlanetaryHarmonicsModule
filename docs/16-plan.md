@@ -94,7 +94,8 @@ B1 is needed by Layer 2's own ML regardless of any split
 |---|---|---|
 | ~~C1~~ | **Done.** Shelly Parkfield LFE catalogue: 1,528,117 events, 88 families, 23.1 yr, USGS public domain | ✓ |
 | **D1′** | **Done.** M2/S2 gate fires — S2 is 4.2× M2 and K1 sits at 1.16× the S1 artifact floor. Raw period folding on this catalogue measures the detector | ✓ |
-| **C2** | Resolve ΔCFS on San Andreas geometry at family locations and test *phase*, not folded period — the only way past the detection artifact. Full exponential `R₀exp(S_T/Aσ₀)`, M > 1 | C1 |
+| ~~C2~~ | **Done.** ΔCFS on SAF geometry, whole-day-shift null fixed in advance. **9/12 families survive BH-FDR**; phases coherent within 71°. First result to survive correction | ✓ |
+| **C2c** | Full exponential `R₀exp(S_T/Aσ₀)` with M > 1 — amplitude modelling, not timing | C2 |
 | **C2b** | Alias analysis — blacklist beats against the 24 h detection cycle | C1 |
 | **C3** | Measure the response spectrum where the effect is strong | C2 |
 
