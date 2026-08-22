@@ -7,6 +7,14 @@
 //! Ephemerides come from [`rustspice_core`], consumed as a Rust library. There is
 //! no WASM boundary within this chain; see `docs/10-rustspice-requirements.md`.
 //!
+//! # Scope
+//!
+//! This crate holds only what **more than one** downstream project needs. Catalogue
+//! parsers, research examples and domain analyses live with the application that
+//! needs them — the seismology programme is in
+//! [EarthquakeForecastModule](https://github.com/Jthora/EarthquakeForecastModule).
+//! A module only one consumer needs is application code, not library code.
+//!
 //! # Layout
 //!
 //! - [`tidal`] — tide-generating potential, the tidal tensor, concentration nodes
@@ -19,11 +27,7 @@
 //! - [`field`] — tidal fields from real ephemeris geometry
 //! - [`fault`] — resolving a tensor onto a fault plane; Coulomb failure stress
 //! - [`love`] — elastic response; tensors to stress in Pa, and `T_a`
-//! - [`catalog`] — event catalogues
-//! - [`apollo`] — Apollo PSE catalogue ingestion (Phase 1 validation)
-//! - [`parkfield`] — Parkfield LFE catalogue ingestion (Phase 2 testbed)
-//! - [`cascadia`] — Cascadia tremor catalogue (independent second site)
-//! - [`comcat`] — USGS global earthquake catalogue (Phase 3, ordinary crust)
+//! - [`catalog`] — event types; catalogue *ingestion* lives with its application
 //!
 //! # A standing invariant
 //!
@@ -31,10 +35,7 @@
 //! (Heimisson & Avouac 2020, eq. 6: `⟨R⟩ = r` exactly). Tides redistribute *when*
 //! events occur; they do not create them. Any output implying otherwise is a bug.
 
-pub mod apollo;
-pub mod cascadia;
 pub mod catalog;
-pub mod comcat;
 pub mod demod;
 pub mod doodson;
 pub mod ephemeris;
@@ -42,7 +43,6 @@ pub mod fault;
 pub mod field;
 pub mod harmonics;
 pub mod love;
-pub mod parkfield;
 pub mod phase;
 pub mod stats;
 pub mod tidal;

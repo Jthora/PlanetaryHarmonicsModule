@@ -84,6 +84,38 @@ The build plan's phases determine the split point:
 
 The line is **not** "is it Earth?" — it is **"are we forecasting?"**
 
+### ⚠⚠ Second correction, 2026-08-22: the whole seismology programme moved
+
+The correction below argued Phase 3 splits by "is it forecasting?", keeping
+measurement upstream. **That test was too clever.** The sharper question is:
+
+> **Who else needs this?**
+
+PlanetaryHarmonics serves four downstream projects. Star Seer does not need a USGS
+earthquake parser. Cosmic Cypher does not need Parkfield LFE families. Resonant
+Finder does not need a moonquake nest catalogue. **A module only one consumer needs
+is application code, not library code** — regardless of whether it computes a
+forecast or a measurement.
+
+By that test the entire seismology programme belongs downstream, including the
+moonquake and tremor validation. Those validated the library, but
+validating-a-library-for-a-purpose is the application's job.
+
+**Moved to EarthquakeForecastModule:** `apollo`, `parkfield`, `cascadia`, `comcat`;
+all 14 research examples; the catalogue fetch scripts; and docs 01, 04, 05, 07, 08,
+09, 12, 16 — including the research log.
+
+**Stayed:** `tidal`, `fault`, `love`, `doodson`, `stats`, `phase`, `demod`, `field`,
+`ephemeris`, `catalog` (an interface type, not a parser); the CLI and Python
+bindings; `fetch-kernels.sh`, which every consumer needs; and the library docs.
+
+Two benefits beyond tidiness. PHM becomes **reviewable as a library** — evaluating
+the tidal tensor no longer means wading through an earthquake research log. And EFM
+becomes a **coherent scientific narrative** rather than a stub with a handoff
+document attached.
+
+The correction below is retained as a record of the reasoning it replaced.
+
 ### ⚠ Correction, 2026-08-22: Phase 3 is not homogeneous
 
 The line above is right; Phase 3 was assigned to the wrong side of it. Phase 3
