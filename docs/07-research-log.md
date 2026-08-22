@@ -743,3 +743,100 @@ than inherited.
   is waiting, and the analytic Schuster p-value will be just as wrong there.
 - `nakamura_2005_dm_locations.csv` (106 nests, already downloaded) becomes the
   next thing to use.
+
+---
+
+## 2026-08-22 — A5/A6: per-nest Coulomb search, and a second null artifact
+
+**Code:** `ph-core::fault`, `examples/moonquake_nest_coulomb.rs`. 43 tests.
+
+### What was built
+
+Fault-plane resolution in the Aki & Richards convention: normal and slip vectors
+from strike/dip/rake, traction decomposition, `ΔCFS = τ + μ′σₙ`, and rotation of a
+body-fixed tensor into a local North-East-Down frame. Verified against invariants —
+unit and orthogonal basis vectors, `|t|² = σₙ² + |τ|²`, rotation-invariant trace and
+eigenvalues.
+
+**Two things worth recording.**
+
+*Depth does not matter.* The degree-2 tide-generating potential goes as
+`r²·P₂(cos ψ)`, so its second derivatives are **constant throughout the body**. Deep
+moonquake nests at 700–1200 km see the same tidal tensor as the surface. Only
+latitude and longitude enter, and only to set the local frame. (Elastic response
+does vary with depth, but that is the Love-number scale factor, which does not
+change timing.)
+
+*Coulomb stress is linear in the tensor*, `ΔCFS = T_ij C_ij` with
+`C_ij = ½(uᵢnⱼ + uⱼnᵢ) + μ nᵢnⱼ`. So the variance of ΔCFS over any time series is a
+quadratic form `cᵀΣc` on the **covariance of the tensor components**, precomputed
+once. A grid search over thousands of planes and thousands of epochs collapses from
+a full pass per plane to ~72 flops per plane — exactly, not approximately. This is
+what made a 2000-trial null over 74 nests run in a minute.
+
+### The result — and a null that lied
+
+Weber's criterion: search fault orientations for the one minimising
+`score = std(ΔCFS at events) / std(ΔCFS over the span)`. Search space 1,728 planes ×
+5 friction values. Nests with ≥20 events: **74**.
+
+| Null construction | Nests below p = 0.05 |
+|---|---|
+| **Uniform** random event times | **73 / 74** |
+| **Shift** — slide the sequence, preserve spacing | **17 / 74** |
+
+**The uniform null was wrong and would have produced a spectacular false
+positive.** Drawing random times destroys the catalogue's temporal clustering, so
+the test silently became "are events clustered in time at all?" — trivially yes,
+since events at nearby epochs see nearly identical tensors and therefore low
+variance, with no tidal alignment required.
+
+The shift null preserves relative spacing and breaks only the alignment with the
+forcing, which is the question actually intended.
+
+**This is the second time a null has manufactured significance in this project**,
+after the pooled-phase test (A3/A4). Both had the same root cause: *a null that
+fails to preserve the catalogue's own structure tests a different hypothesis than
+the one stated.*
+
+### Honest final numbers
+
+```text
+shift null, 2000 trials:   17/74 nests nominally p < 0.05   (3.7 expected)
+Benjamini-Hochberg, FDR 0.05:   0/74 nests survive
+ensemble excess:                17 vs 3.7, sd 1.87  ->  7.1 sigma
+```
+
+**No individual nest is defensible after multiple-comparison correction. The
+population-level excess is 7.1σ.**
+
+That is a real but modest result, and it matches Weber, Bills & Johnson (2009)
+directly: they report that for some clusters the constant-stress fit is good while
+for others it is "not strongly dependent on plane orientation." A heterogeneous
+population with a minority of well-constrained nests is precisely what 17/74 looks
+like.
+
+Note also that the p-value floor bit in practice. BH over 74 tests needs
+p ≤ 6.8×10⁻⁴ for the strongest nest to survive; at 200 trials the floor was
+5×10⁻³, so **no nest could have passed regardless of signal strength.** Raising to
+2000 trials moved the floor to 5×10⁻⁴, below the threshold — after which the answer
+was still zero, but now for a real reason rather than an arithmetic one.
+
+### Caveats
+
+1. The shift null may itself be partially degenerate, since catalogue and forcing
+   share the anomalistic month (A3/A4). 17/74 could still be inflated.
+2. No Love numbers, so this is stress **shape**, not magnitude. Timing and the
+   orientation search are unaffected; absolute ΔCFS in Pa is not available and must
+   not be reported from this code.
+3. Grid resolution is 15°/15°/30°. A finer grid would lower every score, observed
+   and null alike, so the comparison holds — but per-nest orientations should not
+   be quoted at better than grid resolution.
+
+### Plan status
+
+**A5 complete. A6 complete, with a negative headline and a positive ensemble.**
+Phase 1 has now produced its real deliverable, which is not "tides drive
+moonquakes" — that was known — but a **validated instrument plus two documented
+ways to fool it**. Both traps are waiting in Phase 3, where earthquake catalogues
+carry aftershock clustering and seasonal detection cycles of their own.

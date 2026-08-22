@@ -180,3 +180,88 @@ Y,JD,S,E,A1,T1,N1,T2,N2
         assert_eq!(deep_moonquakes(&e, Some(7)).len(), 1);
     }
 }
+
+/// A deep moonquake nest location from `nakamura_2005_dm_locations.csv`.
+///
+/// Depths run 700–1200 km, but **depth does not affect the degree-2 tidal
+/// tensor**: the tide-generating potential goes as `r²·P₂(cos ψ)`, so its second
+/// derivatives are *constant throughout the body*. Only latitude and longitude
+/// matter, and only because they set the local frame orientation. (Depth does
+/// affect the elastic response — the Love-number scale factor — but that is a
+/// separate correction and does not change timing.)
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub struct NestLocation {
+    pub nest: u32,
+    pub lat_deg: f64,
+    pub lon_deg: f64,
+    pub depth_km: f64,
+    /// True where the published location is assumed rather than determined.
+    pub assumed: bool,
+}
+
+/// Parse `nakamura_2005_dm_locations.csv`.
+pub fn parse_dm_locations(csv: &str) -> Vec<NestLocation> {
+    let mut lines = csv.lines();
+    let header: Vec<&str> = match lines.next() {
+        Some(h) => h.split(',').map(|s| s.trim()).collect(),
+        None => return Vec::new(),
+    };
+    let col = |n: &str| header.iter().position(|h| *h == n);
+    let (ci_a, ci_lat, ci_lon, ci_d, ci_as) = match (
+        col("A"),
+        col("Lat"),
+        col("Long"),
+        col("Depth"),
+        col("Assumed"),
+    ) {
+        (Some(a), Some(b), Some(c), Some(d), Some(e)) => (a, b, c, d, e),
+        _ => return Vec::new(),
+    };
+
+    let mut out = Vec::new();
+    for line in lines {
+        let f: Vec<&str> = line.split(',').map(|s| s.trim()).collect();
+        if f.len() <= ci_as {
+            continue;
+        }
+        let (Ok(nest), Ok(lat), Ok(lon), Ok(depth)) = (
+            f[ci_a].parse::<u32>(),
+            f[ci_lat].parse::<f64>(),
+            f[ci_lon].parse::<f64>(),
+            f[ci_d].parse::<f64>(),
+        ) else {
+            continue;
+        };
+        out.push(NestLocation {
+            nest,
+            lat_deg: lat,
+            lon_deg: lon,
+            depth_km: depth,
+            assumed: f[ci_as].eq_ignore_ascii_case("Y"),
+        });
+    }
+    out
+}
+
+#[cfg(test)]
+mod location_tests {
+    use super::*;
+
+    const SAMPLE: &str = "\
+A,Side,Lat,Lat_err,Long,Long_err,Depth,Depth_err,Assumed
+1,N,-15.7,2.4,-36.6,4.6,867,29,N
+5,N,1.1,94.2,-44.7,16.4,933,109,Y
+bad,N,0,0,0,0,0,0,N
+";
+
+    #[test]
+    fn parses_locations_and_assumed_flag() {
+        let l = parse_dm_locations(SAMPLE);
+        assert_eq!(l.len(), 2);
+        assert_eq!(l[0].nest, 1);
+        assert!((l[0].lat_deg + 15.7).abs() < 1e-9);
+        assert!((l[0].lon_deg + 36.6).abs() < 1e-9);
+        assert!(!l[0].assumed);
+        assert!(l[1].assumed);
+    }
+}
