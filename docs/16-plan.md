@@ -211,7 +211,7 @@ whole project is built to measure.
 | # | Task | Why |
 |---|---|---|
 | ~~F2~~ | **Done.** `ph_core::love`, degree-2 elastic calibration, good to ~2×. M2 solid Earth tide = **595 Pa** against Thomas et al.'s `Aσ₀` = 600 Pa, matching to 1% — independently explaining why Parkfield is non-linear and why C3's slope exceeds 2 | ✓ |
-| **C5** | Second site — Cascadia tremor (PNSN, `pnsn.org/tremor`) | Every Parkfield result rests on **one location with co-located families**. C2's phase coherence was explicitly a coherence check, not independent confirmation. A second site is the cheapest genuine independence available. |
+| ~~C5~~ | **Done.** 678,084 Cascadia tremor detections, 2009–2024. **8/9 constituents give the same verdict as Parkfield; M2, N2, O1 significant at both.** Different tectonics, geography and detection method, so a shared artifact is very hard to sustain. First replicated result in the project | ✓ |
 
 ## Then — Phase 3, which needs the split
 

@@ -22,6 +22,7 @@
 //! - [`catalog`] — event catalogues
 //! - [`apollo`] — Apollo PSE catalogue ingestion (Phase 1 validation)
 //! - [`parkfield`] — Parkfield LFE catalogue ingestion (Phase 2 testbed)
+//! - [`cascadia`] — Cascadia tremor catalogue (independent second site)
 //!
 //! # A standing invariant
 //!
@@ -30,6 +31,7 @@
 //! events occur; they do not create them. Any output implying otherwise is a bug.
 
 pub mod apollo;
+pub mod cascadia;
 pub mod catalog;
 pub mod demod;
 pub mod doodson;

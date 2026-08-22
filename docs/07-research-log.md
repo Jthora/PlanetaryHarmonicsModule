@@ -1394,3 +1394,99 @@ comparison no longer depends on our reading of a roll-off we never measured.
 **Still needed for the long-period end:** the non-significance at Mf/Mm/Ssa/Sa is
 power-limited, and more events will not fix Sa's 5 blocks. A longer catalogue or a
 second site is the only route.
+
+---
+
+## 2026-08-22 — C5: independent replication at Cascadia
+
+**Code:** `ph_core::cascadia`, `scripts/fetch-cascadia.sh`,
+`examples/two_site_comparison.rs`. 72 tests.
+
+### Why this was the most important gap
+
+Every Parkfield result rested on **one location with co-located families**. C2's
+phase coherence across 12 families was explicitly labelled a coherence check rather
+than confirmation, because they all see the same forcing. A shared instrumental
+artifact remained a live explanation.
+
+### The second site
+
+**678,084 tremor detections, 2009–2024**, from the PNSN interactive tremor
+catalogue (Wech). Public, no credentials.
+
+| | Parkfield | Cascadia |
+|---|---|---|
+| Setting | strike-slip transform | subduction megathrust |
+| Location | 35.6 N, 120.2 W | 40–50 N, 122–125 W |
+| Events | 1,528,117 LFEs | 678,084 tremor |
+| Span | 23.1 yr | 15.4 yr |
+| **Detection** | **template matching** | **envelope cross-correlation** |
+
+The detection difference is what gives the comparison force. Parkfield's diurnal
+artifact (D1: S1 power 16,245 against a null expectation of 1) arises from template
+matching against a time-varying noise floor. A different pipeline should carry a
+*different* artifact.
+
+### Result
+
+Phase-only, so no fault geometry is involved and the sites are directly comparable.
+Same analytic Doodson phases, same per-block shift null, 400 trials.
+
+| Band | Period (d) | PK ratio | PK p | CS ratio | CS p |
+|---|---|---|---|---|---|
+| **M2** | 0.5175 | **223** | 0.0025 ✱ | **100** | 0.0025 ✱ |
+| **N2** | 0.5274 | **45.7** | 0.0025 ✱ | **7.8** | 0.0050 ✱ |
+| **O1** | 1.0758 | **137** | 0.0025 ✱ | **51** | 0.0025 ✱ |
+| Q1 | 1.1195 | 6.6 | 0.0075 ✱ | 0.9 | 0.56 |
+| Mf | 13.661 | 1.5 | 0.36 | 0.4 | 0.74 |
+| Msf | 14.765 | 2.9 | 0.11 | 2.7 | 0.18 |
+| Mm | 27.555 | 2.3 | 0.18 | 2.5 | 0.17 |
+| Ssa | 182.62 | 0.6 | 0.72 | 1.7 | 0.28 |
+| Sa | 365.26 | 2.8 | 0.087 | 2.2 | 0.11 |
+
+**8/9 constituents give the same verdict. M2, N2 and O1 are significant at both.**
+
+The single disagreement is **Q1** — the weakest constituent, significant at the site
+with 2.3× more events and not at the other. That is where power fails first, and it
+is the expected failure rather than a contradiction.
+
+### What this buys
+
+**The shared-artifact explanation is now very hard to sustain.** Template matching
+and envelope cross-correlation would both have to manufacture the same
+M2/N2/O1-significant, long-period-null pattern, at different latitudes, on
+different fault geometries, over different epochs.
+
+This is the first result in the project that is **replicated rather than
+internally consistent**, and it retroactively strengthens C2, C3 and C4.
+
+### An honest note on effect size
+
+Cascadia's ratios run systematically lower (M2 100 vs 223; O1 51 vs 137). Part is
+sample size — 678k against 1,528k — but not all of it. If ε were equal, `D²/N`
+would scale with `N`, predicting a Cascadia/Parkfield ratio of 0.44; the observed
+M2 ratio is 0.15, implying Cascadia's fractional modulation is roughly **0.6× that
+of Parkfield.** Different setting, different sensitivity. Worth quantifying properly
+once Cascadia has fault geometry and an `R(ω)` normalisation.
+
+### Two API behaviours worth recording
+
+`scripts/fetch-cascadia.sh` documents both, because each would silently corrupt a
+catalogue:
+
+1. **The API caps a response at 20,000 events and does not say so.** A yearly
+   request returns exactly 20,000 with HTTP 200 and no truncation flag. The first
+   fetch produced a tidy-looking 314,569 rows that were quietly wrong. Monthly
+   chunking plus a near-cap warning fixes it.
+2. **Empty windows return 404, not an empty result.** The catalogue starts mid-2009,
+   so early months 404 legitimately and `curl --fail` aborts the run.
+
+Neither is a trap in the statistical sense, but both belong in the same family:
+*a result that looks complete while silently being something else.*
+
+### Still open at the long-period end
+
+Mf through Sa remain non-significant at both sites. Cascadia does not resolve this
+— it has a **shorter** span (15.4 yr against 23.1), so it has *less* long-period
+power, not more. Testing the band prediction still needs ordinary crust and a long
+catalogue, which is Phase 3.
