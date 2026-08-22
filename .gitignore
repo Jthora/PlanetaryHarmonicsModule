@@ -14,3 +14,8 @@
 
 # macOS
 .DS_Store
+
+# Python build artifacts
+/target/wheels/
+*.egg-info/
+__pycache__/

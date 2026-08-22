@@ -1,0 +1,23 @@
+[package]
+name = "planetary-harmonics-py"
+description = "Python bindings for PlanetaryHarmonics analysis primitives"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+publish = false
+
+[lib]
+name = "planetary_harmonics"
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+planetary-harmonics-core = { path = "../ph-core" }
+# `extension-module` is NOT a default feature. With it enabled, Python symbols
+# resolve at import time against the host interpreter, so a plain `cargo build`
+# cannot link. maturin turns it on (see pyproject.toml); `cargo check` verifies
+# the code compiles without needing to link at all.
+pyo3 = { version = "0.23", features = ["abi3-py39"] }
+
+[features]
+extension-module = ["pyo3/extension-module"]
