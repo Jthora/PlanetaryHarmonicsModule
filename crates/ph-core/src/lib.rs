@@ -19,6 +19,7 @@
 //!
 //! - [`tidal`] — tide-generating potential, the tidal tensor, concentration nodes
 //! - [`harmonics`] — Fourier angular encodings and least-squares decomposition
+//! - [`commensurability`] — multi-body angular relationships under d'Alembert
 //! - [`phase`] — tidal phase from a sampled quasi-periodic forcing
 //! - [`demod`] — complex demodulation; isolating one constituent for R(ω)
 //! - [`doodson`] — analytic constituent phases from the fundamental arguments
@@ -37,6 +38,7 @@
 //! events occur; they do not create them. Any output implying otherwise is a bug.
 
 pub mod catalog;
+pub mod commensurability;
 pub mod demod;
 pub mod doodson;
 pub mod ephemeris;
