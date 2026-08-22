@@ -19,3 +19,6 @@
 /target/wheels/
 *.egg-info/
 __pycache__/
+
+# wasm-pack output
+/crates/ph-wasm/pkg/

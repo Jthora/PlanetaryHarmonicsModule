@@ -1,0 +1,22 @@
+[package]
+name = "planetary-harmonics-wasm"
+description = "WebAssembly + TypeScript bindings for PlanetaryHarmonics"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+publish = false
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+planetary-harmonics-core = { path = "../ph-core" }
+# default-features = false drops filesystem kernel loading, which cannot work in
+# a browser. Kernels arrive as bytes instead.
+rustspice-core = { path = "../../modules/RustSPICE/crates/rustspice-core", default-features = false }
+wasm-bindgen = "0.2"
+
+# Homebrew's wasm-opt rejects Rust 1.87+ output without these.
+[package.metadata.wasm-pack.profile.release]
+wasm-opt = ["-Oz", "--enable-bulk-memory", "--enable-bulk-memory-opt", "--enable-nontrapping-float-to-int"]
