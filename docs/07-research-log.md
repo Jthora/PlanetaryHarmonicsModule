@@ -1490,3 +1490,98 @@ Mf through Sa remain non-significant at both sites. Cascadia does not resolve th
 — it has a **shorter** span (15.4 yr against 23.1), so it has *less* long-period
 power, not more. Testing the band prediction still needs ordinary crust and a long
 catalogue, which is Phase 3.
+
+---
+
+## 2026-08-22 — P3.4: the band prediction test. Inconclusive, with bounds.
+
+**Code:** `ph_core::comcat`, `scripts/fetch-comcat.sh`,
+`examples/band_prediction_test.rs`. 81 tests.
+
+### Magnitude of completeness, settled empirically
+
+Mc drift projects onto long-period features and manufactures exactly the signal
+the band prediction looks for, so the threshold is the whole ballgame. Decadal
+counts decide it:
+
+| Threshold | 1970s | 1980s | 1990s | 2000s | 2010s | verdict |
+|---|---|---|---|---|---|---|
+| M5.0+ | 13,581 | 16,025 | 14,660 | 17,234 | 18,469 | **+36%, monotonic — incomplete** |
+| **M5.5+** | 4,377 | 4,384 | 4,865 | 5,160 | 4,898 | **18% spread, no trend — stable** |
+| M6.0+ | 1,127 | 1,287 | 1,535 | 1,585 | 1,494 | +33% |
+
+**M ≥ 5.5, 1970–2025: 25,962 events over 55 years.** Above Beeler & Lockner's
+~13,000 requirement.
+
+Also added `phase_at_longitude`: tidal phase is *local*, and for semidiurnal
+constituents a 180° longitude error is a full cycle. Without it a global catalogue
+would be scattered across every phase and any real signal erased.
+
+### Result
+
+| Band | Period (d) | PK ratio | CS ratio | **EQ ratio** | **EQ p** |
+|---|---|---|---|---|---|
+| M2 | 0.518 | 251 ✱ | 92 ✱ | **0.6** | 0.68 |
+| N2 | 0.527 | 50 ✱ | 8.1 ✱ | **2.7** | 0.17 |
+| O1 | 1.076 | 116 ✱ | 47 ✱ | **0.2** | 0.88 |
+| Q1 | 1.120 | 7.4 ✱ | 0.8 | 2.0 | 0.20 |
+| Mf–Sa | 13.7–365 | 0.6–3.3 | 0.4–2.8 | 0.5–1.0 | 0.48–0.72 |
+
+**Nothing is significant for ordinary crust at any constituent.**
+
+### The bounds, which are the actual result
+
+A null result is worth nothing without a detection limit. Converting to fractional
+rate modulation `ε = 2√((D²/N)/N)`:
+
+| Band | EQ upper bound | PK observed | Tremor exceeds bound by |
+|---|---|---|---|
+| **M2** | **< 3.88%** | 21.69% | **5.6×** |
+| **O1** | **< 4.33%** | 14.49% | **3.3×** |
+| **N2** | **< 4.14%** | 6.39% | **1.5×** |
+| Mf–Sa | < 4.95–6.27% | 3.0–11.0% (ns) | — |
+
+**Ordinary crust responds at least 3–5× less than tremor at M2 and O1.** That is a
+real, quantified, defensible statement, and it is consistent with tremor's
+anomalously short `T_a`.
+
+### But the band prediction is still untested — say so plainly
+
+The prediction is that ordinary crust responds **at Sa and longer**. Our
+long-period bounds are only 5–6%, which is nowhere near tight enough to exclude a
+modest long-period response. We have no positive long-period detection and cannot
+rule one out.
+
+**"Ordinary crust is quieter than tremor at short periods" is consistent with
+damping, but it is equally consistent with ordinary crust simply having a larger
+`Aσ₀` and no band structure at all.** The two are not distinguished by this data.
+
+### What would settle it
+
+To reach 1% sensitivity: `N = 4·D²/N_threshold / ε²` ≈ 4 × 10 / 10⁻⁴ =
+**~400,000 events**. We have 25,962 — **the global M5.5+ catalogue is ~15× too
+small.**
+
+The trade is unavoidable. A regional catalogue at lower Mc (California M2.5+ since
+1980 gives ~5×10⁵) reaches the count but sacrifices span and globality; the global
+catalogue has the 55-year span the long-period end needs but not the events. There
+may be no single catalogue that does both, in which case the band prediction is
+answerable only by combining regions with per-region Mc control.
+
+### One flagged coincidence, deliberately not claimed
+
+**Sa is at p = 0.0973 at Parkfield and p = 0.0998 at Cascadia** — two independent
+sites landing within 0.003 of each other at the annual constituent. Fisher's method
+on the two gives p ≈ 0.055.
+
+Not significant, and **Sa is precisely where seasonal hydrological loading
+confounds** (doc 08 §11). Recorded because it is the only long-period feature
+showing consistency across sites, and because pre-registering it now is the only
+way to test it later without it becoming a post-hoc find. **It is not a result.**
+
+### Status
+
+**P3.4 attempted, inconclusive, bounded.** Everything upstream stands: the
+moonquake validation, the two-site tremor replication, the amplitude law, the
+elastic calibration. The central question remains open, and now has a number
+attached to what would close it.

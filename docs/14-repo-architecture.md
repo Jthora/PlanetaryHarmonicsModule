@@ -79,10 +79,41 @@ The build plan's phases determine the split point:
 | Phase | Content | Home |
 |---|---|---|
 | **1** Deep moonquakes | Validation of this library | **PlanetaryHarmonics** ✓ done |
-| **2** Tectonic tremor | Validation of this library | **PlanetaryHarmonics** |
-| **3** Earthquakes | Forecasting | **EarthquakeForecastModule** |
+| **2** Tectonic tremor | Validation of this library | **PlanetaryHarmonics** ✓ done |
+| **3** Earthquakes | *see correction below* | **split** |
 
 The line is **not** "is it Earth?" — it is **"are we forecasting?"**
+
+### ⚠ Correction, 2026-08-22: Phase 3 is not homogeneous
+
+The line above is right; Phase 3 was assigned to the wrong side of it. Phase 3
+contains both measurement and forecasting, and only the second half is forecasting:
+
+| Work | Forecasting? | Home |
+|---|---|---|
+| ComCat ingestion | no — a catalogue module, like `parkfield`/`cascadia` | **PlanetaryHarmonics** |
+| Magnitude-of-completeness analysis | no — catalogue quality tooling | **PlanetaryHarmonics** |
+| GCMT focal mechanisms | no — physics input to `fault` | **PlanetaryHarmonics** |
+| **P3.4 — `R(ω)` for ordinary crust** | **no — it is a measurement** | **PlanetaryHarmonics** |
+| ETAS baseline, residual model, β(x,t), CSEP | yes | **EarthquakeForecastModule** |
+
+**P3.4 is the third rung of the validation ladder, not the start of forecasting.**
+Doc 05's ladder runs moonquakes → tremor → earthquakes, and §3 of this document
+already noted that the ladder spans the split. Measuring `R(ω)` for ordinary crust
+uses the *identical* code path as C4 and C5 — `doodson`, `fault`, `love`, the
+block-shift null — with no ETAS anywhere in it.
+
+Three consequences:
+
+1. The three-site comparison (moonquakes, two tremor sites, earthquakes) is **one
+   coherent result** and should not be fragmented across repositories.
+2. Forecasting consumes `ph-core` through the submodule exactly as `parkfield` and
+   `cascadia` already do, so nothing is duplicated by keeping ingestion upstream.
+3. **The handoff improves materially.** EarthquakeForecastModule then starts with
+   *"here is the transfer function for ordinary crust"* rather than *"go find
+   out"* — a foundation instead of a to-do list. Its `HANDOFF.md` §11 currently
+   lists the band prediction as the central open question; answering it upstream
+   first turns that section into a result.
 
 Phases 1 and 2 are the library proving it measures what it claims to measure,
 against known answers. That is library work and belongs here. Phase 3 is where

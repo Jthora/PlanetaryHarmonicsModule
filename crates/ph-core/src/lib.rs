@@ -23,6 +23,7 @@
 //! - [`apollo`] — Apollo PSE catalogue ingestion (Phase 1 validation)
 //! - [`parkfield`] — Parkfield LFE catalogue ingestion (Phase 2 testbed)
 //! - [`cascadia`] — Cascadia tremor catalogue (independent second site)
+//! - [`comcat`] — USGS global earthquake catalogue (Phase 3, ordinary crust)
 //!
 //! # A standing invariant
 //!
@@ -33,6 +34,7 @@
 pub mod apollo;
 pub mod cascadia;
 pub mod catalog;
+pub mod comcat;
 pub mod demod;
 pub mod doodson;
 pub mod ephemeris;

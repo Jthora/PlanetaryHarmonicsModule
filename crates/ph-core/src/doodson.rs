@@ -137,6 +137,34 @@ impl Constituent {
         days.iter().map(|&d| self.phase_at(d)).collect()
     }
 
+    /// Phase at a given **east longitude**, in `[0, 2π)`.
+    ///
+    /// [`Self::phase_at`] uses Greenwich lunar time. Tidal phase is *local*: the
+    /// lunar time argument τ advances with longitude, so
+    ///
+    /// ```text
+    /// τ_local = τ_Greenwich + longitude
+    /// ```
+    ///
+    /// and the constituent argument gains `n₁ · λ`.
+    ///
+    /// **Essential for a global catalogue.** For semidiurnal constituents `n₁ = 2`,
+    /// so a 180° longitude error is a full 360° of phase — events would be
+    /// scattered across every phase and any real signal erased. Long-period
+    /// constituents have `n₁ = 0` and are unaffected.
+    pub fn phase_at_longitude(&self, days: f64, lon_deg: f64) -> f64 {
+        let base = self.phase_at(days).to_degrees();
+        norm360(base + self.n[0] as f64 * lon_deg).to_radians()
+    }
+
+    /// Phases for times paired with east longitudes.
+    pub fn phases_at_longitudes(&self, days: &[f64], lons: &[f64]) -> Vec<f64> {
+        days.iter()
+            .zip(lons)
+            .map(|(&d, &l)| self.phase_at_longitude(d, l))
+            .collect()
+    }
+
     /// Period in days, from the argument's mean rate of advance.
     ///
     /// Measured by central difference over a century rather than assumed, so it
@@ -295,6 +323,40 @@ mod tests {
         let c = m2.phase_at(1000.0);
         let d = m2.phase_at(1000.5);
         assert!((c - d).abs() > 0.1, "M2 should drift against solar time");
+    }
+
+    #[test]
+    fn longitude_shifts_semidiurnal_phase_by_twice_the_angle() {
+        let m2 = constituent("M2").unwrap();
+        let base = m2.phase_at_longitude(1000.0, 0.0);
+        // n1 = 2 for M2, so +90 deg longitude is +180 deg of phase.
+        let shifted = m2.phase_at_longitude(1000.0, 90.0);
+        let d = (shifted - base).rem_euclid(std::f64::consts::TAU);
+        assert!(
+            (d - std::f64::consts::PI).abs() < 1e-9,
+            "expected pi, got {d}"
+        );
+        // A full 180 deg of longitude is a whole cycle: back to the start.
+        let full = m2.phase_at_longitude(1000.0, 180.0);
+        assert!((full - base).abs() < 1e-9, "{full} vs {base}");
+    }
+
+    #[test]
+    fn longitude_does_not_affect_long_period_constituents() {
+        for name in ["Mf", "Mm", "Ssa", "Sa"] {
+            let c = constituent(name).unwrap();
+            let a = c.phase_at_longitude(1000.0, 0.0);
+            let b = c.phase_at_longitude(1000.0, 137.0);
+            assert!((a - b).abs() < 1e-12, "{name} moved with longitude");
+        }
+    }
+
+    #[test]
+    fn phase_at_longitude_zero_matches_phase_at() {
+        let m2 = constituent("M2").unwrap();
+        for d in [0.0, 123.4, 9000.0] {
+            assert!((m2.phase_at_longitude(d, 0.0) - m2.phase_at(d)).abs() < 1e-12);
+        }
     }
 
     #[test]
