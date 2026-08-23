@@ -401,3 +401,88 @@ mod tests {
         assert!(f.values.iter().all(|v| v.is_finite()));
     }
 }
+
+#[cfg(test)]
+mod placeholder_tests {
+    use super::*;
+    use crate::chart::{Chart, Frame};
+
+    /// The names a placeholder yields must be exactly the names a real chart
+    /// yields, or `featureNames` in the WASM layer would describe a different
+    /// matrix than `chartFeatures` returns and every column would be mislabelled.
+    ///
+    /// The trap this guards is specific: the derived layers skip bodies at zero
+    /// distance, so a naive dummy chart with every body present would include the
+    /// frame's observer and shift every column after it.
+    #[test]
+    fn placeholder_names_match_a_populated_chart_of_the_same_frame() {
+        for frame in [Frame::Geocentric, Frame::Heliocentric, Frame::Barycentric] {
+            let ph = Chart::placeholder(frame);
+
+            // A "real" chart: same frame, arbitrary but non-degenerate values, and
+            // crucially the same body absent.
+            let mut real = Chart::placeholder(frame);
+            for (i, s) in real.states.iter_mut().enumerate() {
+                if s.dist == 0.0 {
+                    continue;
+                }
+                s.lon = 1.7 * i as f64;
+                s.lat = -0.03 * i as f64;
+                s.dist = 3.3e5 * (i as f64 + 1.0);
+                s.lon_speed = -0.02 * i as f64;
+            }
+
+            let a = all(&ph, 6, 8);
+            let b = all(&real, 6, 8);
+            assert_eq!(a.names, b.names, "{frame:?}: placeholder column set differs");
+            assert!(!a.names.is_empty());
+
+            // The families differ in how they treat the observer, and that is
+            // exactly why a placeholder must reproduce it rather than guess.
+            //
+            // aspects() and declination_aspects() carry every body unconditionally,
+            // so the observer appears there as a constant column -- this is the
+            // source of the "constant columns dropped" seen when fitting. The
+            // fixed-point family skips zero-distance bodies, so the observer is
+            // genuinely absent there. A placeholder that got the zero-distance
+            // body wrong would shift every fix.* column.
+            //
+            // Barycentric is the case that makes this worth asserting rather than
+            // assuming: its observer is the solar-system barycentre, which is not
+            // a member of BODIES at all, so nothing is skipped and no body is
+            // degenerate. Geocentric and heliocentric each lose one.
+            let observer = frame.observer();
+            let observer_is_a_body = crate::chart::BODIES.contains(&observer);
+            assert_eq!(
+                observer_is_a_body,
+                frame != Frame::Barycentric,
+                "{frame:?}: unexpected observer membership"
+            );
+            if observer_is_a_body {
+                assert!(
+                    a.names.iter().any(|n| n.contains(&format!(".{observer}."))),
+                    "{frame:?}: {observer} should still appear in the unguarded families"
+                );
+                assert_eq!(
+                    ph.states
+                        .iter()
+                        .filter(|s| s.dist == 0.0)
+                        .count(),
+                    1,
+                    "{frame:?}: exactly one body should be degenerate"
+                );
+            } else {
+                assert!(ph.states.iter().all(|s| s.dist != 0.0),
+                        "{frame:?}: no body should be degenerate");
+            }
+        }
+    }
+
+    #[test]
+    fn placeholder_names_are_stable_across_calls() {
+        // The column order is an API contract once JavaScript caches it.
+        let a = all(&Chart::placeholder(Frame::Geocentric), 4, 5);
+        let b = all(&Chart::placeholder(Frame::Geocentric), 4, 5);
+        assert_eq!(a.names, b.names);
+    }
+}

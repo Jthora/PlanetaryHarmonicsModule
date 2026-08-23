@@ -133,6 +133,35 @@ impl Chart {
         BODIES.iter().position(|b| *b == name).map(|i| &self.states[i])
     }
 
+    /// A chart with no ephemeris behind it, for obtaining feature *names*.
+    ///
+    /// The derived feature layers skip any body whose distance is zero, because a
+    /// body has no direction from itself — so the observer of the frame is absent
+    /// from the feature vector, and which body that is changes the column set.
+    /// Names therefore cannot be produced from an arbitrary dummy chart; they need
+    /// one whose zero-distance body matches the real thing.
+    ///
+    /// Values are placeholders and carry no meaning. Only the shape is real.
+    pub fn placeholder(frame: Frame) -> Chart {
+        let mut states = vec![BodyState::default(); BODIES.len()];
+        for (i, body) in BODIES.iter().enumerate() {
+            if *body == frame.observer() {
+                continue; // leaves dist at 0.0, marking it absent
+            }
+            states[i] = BodyState {
+                lon: 0.1 * i as f64,
+                lat: 0.01 * i as f64,
+                dist: 1.0e6 + i as f64,
+                lon_speed: 0.01,
+                lat_speed: 0.001,
+                dist_speed: 1.0,
+                ra: 0.1 * i as f64,
+                dec: 0.01 * i as f64,
+            };
+        }
+        Chart { day: 0.0, frame, states }
+    }
+
     /// Longitude of the Moon's ascending node, radians.
     ///
     /// Derived from the orbital angular momentum rather than read from a kernel:
