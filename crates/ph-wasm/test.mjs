@@ -134,5 +134,76 @@ const nmRow = h.features(Float64Array.from([nmDay]), ...nmSpec);
 check("new moon has syn.h1.cos = +1", Math.abs(nmRow[synIdx] - 1) < 1e-3,
       `${nmRow[synIdx].toFixed(5)}`);
 
+// --- compact chart ephemeris ---
+// A second instance, fed only the 6 MB fit and the 5 KB leapsecond kernel, must
+// agree with the 33 MB SPICE kernel it was derived from. Two instances rather
+// than one, because the compact path takes precedence once loaded and the
+// comparison would otherwise be against itself.
+const c = new Harmonics();
+c.loadKernel("naif0012.tls", readFileSync("kernels/naif0012.tls"));
+const span = c.loadCompact(readFileSync("kernels/chart.phce"));
+check("compact loaded", c.hasCompact() && span.length === 2,
+      `days ${span[0].toFixed(0)} to ${span[1].toFixed(0)}`);
+
+const compactBytes = readFileSync("kernels/chart.phce").length;
+const spiceBytes = readFileSync("kernels/de440s.bsp").length;
+check("compact is much smaller", compactBytes * 4 < spiceBytes,
+      `${(compactBytes / 1e6).toFixed(2)} MB vs ${(spiceBytes / 1e6).toFixed(2)} MB`);
+
+// Whole charts, at epochs chosen to fall between fitting nodes.
+const cmpDays = Float64Array.from(
+  { length: 60 }, (_, i) => -30000 + i * 1013.37 + 0.4271);
+let worstArcsec = 0, worstBody = "";
+for (const frame of ["geocentric", "heliocentric", "barycentric"]) {
+  const ref = h.charts(cmpDays, frame);
+  const got = c.charts(cmpDays, frame);
+  check(`${frame} shape matches`, ref.length === got.length);
+  for (let e = 0; e < cmpDays.length; e++) {
+    for (let b = 0; b < bodies.length; b++) {
+      const o = (e * bodies.length + b) * 8;
+      if (ref[o + 2] === 0) continue; // observer is degenerate in both
+      let d = Math.abs(ref[o] - got[o]);
+      if (d > Math.PI) d = 2 * Math.PI - d;
+      const arcsec = (d * 180 / Math.PI) * 3600;
+      if (arcsec > worstArcsec) { worstArcsec = arcsec; worstBody = bodies[b]; }
+    }
+  }
+}
+check("compact matches SPICE below 0.1 arcsec", worstArcsec < 0.1,
+      `worst ${worstArcsec.toFixed(4)} arcsec (${worstBody})`);
+
+// Features from the compact path must match the SPICE path too, not just the
+// primitives they are built from.
+const fSpec = [["geocentric"], 6, 4, 4, false, 0, 0, 4];
+const fd = Float64Array.from([8766.37, 9000.11]);
+const fNames = h.featureNames(...fSpec);
+const refF = h.features(fd, ...fSpec);
+const gotF = c.features(fd, ...fSpec);
+// Relative, not absolute. A few features carry raw kilometres -- Pluto's distance
+// is 5.9e9 km, where f32 quantises to ~500 km -- so an absolute tolerance would
+// be comparing the storage format against itself. Angular features are unaffected.
+let worstRel = 0, worstName = "";
+for (let i = 0; i < refF.length; i++) {
+  const rel = Math.abs(refF[i] - gotF[i]) / Math.max(Math.abs(refF[i]), 1);
+  if (rel > worstRel) { worstRel = rel; worstName = fNames[i % fNames.length]; }
+}
+// 1e-3 rather than something tighter: rate features are formed by cancellation
+// -- dist_speed is (p.v)/r -- and pass through zero, so f32 noise in the inputs
+// is amplified without bound in relative terms near the crossing. A genuine
+// error here (wrong body, wrong frame, shifted column) would be order one, not
+// order 1e-5.
+check("features agree across sources", worstRel < 1e-3,
+      `worst ${worstRel.toExponential(2)} on ${worstName}`);
+
+// Outside the fitted span the answer must be refused, not extrapolated -- a
+// Chebyshev fit diverges violently past its interval.
+let outOfRange = false;
+try { c.charts(Float64Array.from([500000]), "geocentric"); } catch { outOfRange = true; }
+check("out-of-span day is rejected", outOfRange);
+
+let badCompact = false;
+try { new Harmonics().loadCompact(Uint8Array.from([1, 2, 3, 4, 5])); } catch { badCompact = true; }
+check("malformed compact file is rejected", badCompact);
+
 console.log(failures === 0 ? "\nall checks passed" : `\n${failures} FAILURES`);
 process.exit(failures === 0 ? 0 : 1);

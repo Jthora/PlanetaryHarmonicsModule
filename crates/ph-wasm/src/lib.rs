@@ -25,6 +25,7 @@
 //! as bytes via [`Harmonics::load_kernel`].
 
 use ph_core::chart::{self, Chart, Frame};
+use ph_core::compact::CompactEphemeris;
 use ph_core::{
     chart_cycles, chart_features, chart_local, commensurability as com, doodson, events, fault,
     love, tidal::TidalTensor,
@@ -97,6 +98,7 @@ fn assemble(charts: &[Chart], spec: &Spec) -> chart_features::FeatureSet {
 pub struct Harmonics {
     kernels: KernelSet,
     session: Option<Session>,
+    compact: Option<CompactEphemeris>,
 }
 
 impl Default for Harmonics {
@@ -112,6 +114,7 @@ impl Harmonics {
         Harmonics {
             kernels: KernelSet::new(),
             session: None,
+            compact: None,
         }
     }
 
@@ -161,6 +164,51 @@ impl Harmonics {
         })
     }
 
+    /// Load a compact chart ephemeris, as produced by `build_compact`.
+    ///
+    /// Six megabytes against `de440s.bsp`'s thirty-three, at 0.03 arcseconds of
+    /// chart longitude — a thousand times finer than any chart displays. Once
+    /// loaded, [`charts`] and [`features`] use it and need no SPICE kernels at
+    /// all; only `parseTime` still wants `naif0012.tls`, which is five kilobytes.
+    ///
+    /// Returns the day range covered, so a caller can bound its own inputs.
+    #[wasm_bindgen(js_name = loadCompact)]
+    pub fn load_compact(&mut self, data: &[u8]) -> Result<Vec<f64>, JsValue> {
+        let eph = CompactEphemeris::from_bytes(data)
+            .ok_or_else(|| err("not a valid compact chart ephemeris"))?;
+        let (a, b) = eph.day_range();
+        self.compact = Some(eph);
+        Ok(vec![a, b])
+    }
+
+    /// True if a compact ephemeris is loaded and will be used for charts.
+    #[wasm_bindgen(js_name = hasCompact)]
+    pub fn has_compact(&self) -> bool {
+        self.compact.is_some()
+    }
+
+    /// Charts for one frame, from whichever source is available.
+    ///
+    /// The compact ephemeris wins when present: it is the cheaper path and the
+    /// caller asked for it by loading it.
+    fn charts_for(&mut self, days: &[f64], frame: Frame) -> Result<Vec<Chart>, JsValue> {
+        if let Some(eph) = &self.compact {
+            let (a, b) = eph.day_range();
+            if let Some(&d) = days.iter().find(|d| **d < a || **d > b) {
+                return Err(err(format!(
+                    "day {d:.2} is outside the compact ephemeris span {a:.0} to {b:.0};                      rebuild it for a wider range or load SPICE kernels"
+                )));
+            }
+            return Ok(eph.charts(days, frame));
+        }
+        let epoch = {
+            let s = self.session()?;
+            s.parse_time("2000-01-01T00:00:00").map_err(err)?
+        };
+        let sess = self.session()?;
+        chart::charts(sess, days, frame, epoch).map_err(err)
+    }
+
     fn session(&mut self) -> Result<&mut Session, JsValue> {
         if self.session.is_none() {
             self.session = Some(self.kernels.open().map_err(err)?);
@@ -189,9 +237,7 @@ impl Harmonics {
     #[wasm_bindgen(js_name = charts)]
     pub fn charts(&mut self, days: &[f64], frame: &str) -> Result<Vec<f64>, JsValue> {
         let f = parse_frame(frame)?;
-        let sess = self.session()?;
-        let epoch = sess.parse_time("2000-01-01T00:00:00").map_err(err)?;
-        let cs = chart::charts(sess, days, f, epoch).map_err(err)?;
+        let cs = self.charts_for(days, f)?;
         let mut out = Vec::with_capacity(days.len() * chart::BODIES.len() * 8);
         for c in &cs {
             for s in &c.states {
@@ -422,14 +468,9 @@ impl Harmonics {
             site_lon_deg,
             site_harmonic,
         )?;
-        let epoch = {
-            let s = self.session()?;
-            s.parse_time("2000-01-01T00:00:00").map_err(err)?
-        };
         let mut per_frame = Vec::with_capacity(spec.frames.len());
         for f in &spec.frames {
-            let sess = self.session()?;
-            per_frame.push(chart::charts(sess, days, *f, epoch).map_err(err)?);
+            per_frame.push(self.charts_for(days, *f)?);
         }
 
         let mut out: Vec<f32> = Vec::new();

@@ -106,6 +106,48 @@ pub struct BodyState {
     pub dec: f64,
 }
 
+impl BodyState {
+    /// Spherical elements from a Cartesian state.
+    ///
+    /// `p` is an ECLIPJ2000 position in km relative to the frame's observer, and
+    /// `v` its derivative in **km per day**. Shared by the SPICE-backed and
+    /// compact-ephemeris paths so the two cannot disagree about a longitude.
+    ///
+    /// Angular rates come from the state vector exactly rather than by
+    /// differencing: `dlon/dt = (x·vy − y·vx)/(x² + y²)`.
+    pub fn from_state(p: Vec3, v: Vec3) -> BodyState {
+        let r2 = p.x * p.x + p.y * p.y;
+        let r = p.norm();
+        let rho = r2.sqrt();
+        let (ex, ey, ez) = ecliptic_to_equatorial(p);
+        BodyState {
+            lon: norm_tau(p.y.atan2(p.x)),
+            lat: if r > 0.0 { (p.z / r).asin() } else { 0.0 },
+            dist: r,
+            lon_speed: if r2 > 0.0 { (p.x * v.y - p.y * v.x) / r2 } else { 0.0 },
+            lat_speed: if r > 0.0 && rho > 0.0 {
+                (v.z * rho - p.z * (p.x * v.x + p.y * v.y) / rho) / (r * r)
+            } else {
+                0.0
+            },
+            dist_speed: if r > 0.0 {
+                (p.x * v.x + p.y * v.y + p.z * v.z) / r
+            } else {
+                0.0
+            },
+            ra: norm_tau(ey.atan2(ex)),
+            dec: {
+                let m = (ex * ex + ey * ey + ez * ez).sqrt();
+                if m > 0.0 {
+                    (ez / m).asin()
+                } else {
+                    0.0
+                }
+            },
+        }
+    }
+}
+
 /// All body states in one frame at one epoch.
 #[derive(Debug, Clone, PartialEq)]
 pub struct Chart {
@@ -232,44 +274,13 @@ pub fn charts(
             Aberration::None,
         )?;
         for (ci, sv) in states.iter().enumerate() {
-            let (p, v) = (sv.position, sv.velocity);
-            let r2 = p.x * p.x + p.y * p.y;
-            let r = p.norm();
-            // Angular rates from the state vector, exactly rather than by
-            // differencing: d(lon)/dt = (x*vy - y*vx) / (x^2 + y^2).
-            let lon_speed = if r2 > 0.0 {
-                (p.x * v.y - p.y * v.x) / r2 * 86400.0
-            } else {
-                0.0
+            // SPICE reports km/s; BodyState works in km/day throughout.
+            let v = Vec3 {
+                x: sv.velocity.x * 86400.0,
+                y: sv.velocity.y * 86400.0,
+                z: sv.velocity.z * 86400.0,
             };
-            let rho = r2.sqrt();
-            let lat_speed = if r > 0.0 && rho > 0.0 {
-                (v.z * rho - p.z * (p.x * v.x + p.y * v.y) / rho) / (r * r) * 86400.0
-            } else {
-                0.0
-            };
-            let (ex, ey, ez) = ecliptic_to_equatorial(p);
-            out[ci].states[bi] = BodyState {
-                lon: norm_tau(p.y.atan2(p.x)),
-                lat: if r > 0.0 { (p.z / r).asin() } else { 0.0 },
-                dist: r,
-                lon_speed,
-                lat_speed,
-                dist_speed: if r > 0.0 {
-                    (p.x * v.x + p.y * v.y + p.z * v.z) / r * 86400.0
-                } else {
-                    0.0
-                },
-                ra: norm_tau(ey.atan2(ex)),
-                dec: {
-                    let m = (ex * ex + ey * ey + ez * ez).sqrt();
-                    if m > 0.0 {
-                        (ez / m).asin()
-                    } else {
-                        0.0
-                    }
-                },
-            };
+            out[ci].states[bi] = BodyState::from_state(sv.position, v);
         }
     }
     Ok(out)
